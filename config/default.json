@@ -1,0 +1,11 @@
+{
+  "Hoist": {
+    "http": {
+      "port": 8000
+    },
+    "mongo": {
+      "db": "mongodb://localhost/hoist-default"
+    }
+
+  }
+}
