@@ -8,7 +8,6 @@ var mongoose = Model._mongoose;
 var expect = require('chai').expect;
 var config = require('config');
 var router = require('../../lib/router');
-var Hapi = require('hapi');
 
 describe('Server', function () {
 
