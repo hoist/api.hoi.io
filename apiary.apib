@@ -3,13 +3,52 @@ HOST: https://api.hoist.io
 
 # Hoist HTTP API
 
-# Event API root [/events]
+#Group Events
 
+#Event Collection [/]
++ Model (application/json)
+  + Body
+    [{
+      "eventId":"1"
+      ...
+    },
+    {
+      "eventId":"2"
+      ...
+    }]
 
 ## Retrieve Event Stream [GET]
-+ Response 200 (application/json)
- + Body
-    [{
-  "eventId":"{eventid}",
-  "eventName":"{eventName}"
-}]
++ Response 200
+  [Event Collection][]
+
+
+## Add an event [POST]
++ Request
+  + Headers
+    Content-Type: "application/json"
+    Authorization: Hoist {auth-key}
+  + Body
+  {
+    "eventName":"{eventName}"
+  }
++ Response 201
+  [Event][]
+
+#Event [/events/{id}]
+
++ Parameters
+
+  + id (string) ... Id of the event to return
+
++ Model (application/json)
+
+  + Body
+    {
+      "eventId":"{id}",
+      "eventName":"eventName",
+      "correlationId":"correaltionId"
+    }
+
+## Retrieve a single Event [GET]
++ Response 200
+  [Event][]
