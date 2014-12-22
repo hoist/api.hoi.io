@@ -149,8 +149,14 @@ a.list-group-item.heading:hover {
 <p><img src="/screenshot.jpg" alt="screenshot here"></p>
 <pre><code class="lang-http"><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Hoist 23193slakdoqw3213</span>
 </code></pre>
-<h2 id="response-codes">Response Codes</h2>
+<h2 id="response-codes-and-errors">Response codes and errors</h2>
 <p>Hoist uses standard REST style response codes and you should look up any response code in this table</p>
+<p>On errors the body of the request will contain a JSON error</p>
+<pre><code class="lang-javascript">{
+    <span class="hljs-string">"code"</span>:<span class="hljs-number">404</span>,
+    <span class="hljs-string">"message"</span>:<span class="hljs-string">"a more descriptive message of what went wrong"</span>
+}
+</code></pre>
 <table>
 <thead>
 <tr>
