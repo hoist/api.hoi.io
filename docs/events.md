@@ -2,6 +2,8 @@
 All API's related to Events within Hoist.
 
 #Event Stream [/events]
+A streaming API to get all events as they fire
+
 
   + Model (application/json)
 
@@ -18,12 +20,13 @@ All API's related to Events within Hoist.
 
 
 ## Retrieve Event Stream [GET]
+Retrieves a stream of events
 
    + Parameters
 
-     + filter-field (optional, string, 'eventName') ... the field to filter the stream by
+     + filter-field (optional, 'eventName' or 'correlationId') ... the field to filter the stream by
 
-     + filter-value (optional, string, 'my-event') ... the value to filter the stream by
+     + filter-value (optional, string) ... the value to filter the stream by
 
    + Request
        + Headers
@@ -37,10 +40,6 @@ All API's related to Events within Hoist.
 
 #Event [/event/{id}]
 
-+ Parameters
-
-  + id (string, 1) ... Id of the event to return
-
 + Model (application/json)
 
   + Body
@@ -52,8 +51,13 @@ All API's related to Events within Hoist.
     }
 
 ## Retrieve a single Event [GET]
+  + Parameters
+
+    + id (string) ... Id of the event to return
+
   + Response 200
-  [Event][]
+
+    [Event][]
 
 
 ## Add an event [POST]
@@ -61,7 +65,7 @@ All API's related to Events within Hoist.
 create a new event
   + Parameters
 
-    + id (optional, string, 1) ... the id of the event to create
+    + id (optional, string) ... the id of the event to create
 
   + Request
 
