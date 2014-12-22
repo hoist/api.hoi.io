@@ -65,6 +65,12 @@ gulp.task('concat-docs', function () {
 });
 
 gulp.task('docs', ['concat-docs'], function () {
+  gulp.src(globs.docs)
+  .pipe(aglio({
+    template: 'default'
+  }))
+  .pipe(gulp.dest('./docs'));
+  
   gulp.src('apiary.apib')
     .pipe(aglio({
       template: 'default'
