@@ -6,7 +6,7 @@ HOST: https://api.hoist.io
 #Group Events
 All API's related to Events within Hoist.
 
-#Event Stream [/events]
+#Event Stream [/events?streamId={streamId}]
 A streaming API to get all events as they fire
 
 
@@ -14,31 +14,38 @@ A streaming API to get all events as they fire
 
     + Body
 
-        [{
-          "eventId":"1"
-          ...
-        },
-        {
-          "eventId":"2"
-          ...
-        }]
+      {
+        streamId:{streamId},
+        events:[
+          {
+            "eventId":"1"
+            ...
+          },
+          {
+            "eventId":"2"
+            ...
+          }]
+      }
 
 
 ## Retrieve Event Stream [GET]
-Retrieves a stream of events
+
+Retrieves a stream of events and sets up a stream id. Stream id’s will stay available for 10 minutes since the last request. This is a long polling API and should be used with ?streamId to stream results
 
    + Parameters
 
-     + filter-field (optional, 'eventName' or 'correlationId') ... the field to filter the stream by
-
-     + filter-value (optional, string) ... the value to filter the stream by
+     + streamId (optional, string) ... the id of the stream to continue
+     + filterField (optional, 'eventName' or 'correlationId') ... the field to filter the stream by
+     + filterValue (optional, string) ... the value to filter the stream by
+     + timeoutMs (optional, number) ... the number of ms to timeout when no events are available (will return an empty array) defaults to 10000
 
    + Request
        + Headers
-           "Content-Type": "application/json"
-           "Authorization": Hoist {auth-key}
-           "X-Hoist-Filter-By": {filter-field}
-           "X-Hoist-Filter-Value": {filter-value}
+           Content-Type: application/json
+           Authorization: Hoist {authKey}
+           X-Hoist-Filter-By: {filterField}
+           X-Hoist-Filter-Value: {filterValue}
+           X-Hoist-Connection-Timeout: {timeoutMs}
 
    + Response 200
        [Event Stream][]
@@ -52,7 +59,8 @@ Retrieves a stream of events
     {
       "eventId":"{id}",
       "eventName":"eventName",
-      "correlationId":"correaltionId"
+      "correlationId":"correaltionId",
+      "createdAt":"2014-12-22T03:58:00.760Z"
     }
 
 ## Retrieve a single Event [GET]
@@ -76,8 +84,8 @@ create a new event
 
     + Headers
 
-      Content-Type: "application/json"
-      Authorization: Hoist {auth-key}
+      Content-Type: application/json
+      Authorization: Hoist {authKey}
 
     + Body
       ```
