@@ -20,6 +20,7 @@ A streaming API to get all events as they fire
 
 
 ## Retrieve Event Stream [GET]
+
 Retrieves a stream of events
 
    + Parameters
