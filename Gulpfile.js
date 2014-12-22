@@ -7,8 +7,8 @@ var coverageEnforcer = require('gulp-istanbul-enforcer');
 var runSequence = require('run-sequence');
 var aglio = require('gulp-aglio');
 var concat = require('gulp-concat');
-var webserver = require('gulp-webserver');
-
+var livereload = require('gulp-livereload');
+var nodemon = require('gulp-nodemon');
 var globs = {
   js: {
     lib: ['lib/**/*.js', 'start.js'],
@@ -59,32 +59,25 @@ gulp.task('jshint', function () {
 });
 
 gulp.task('concat-docs', function () {
-  gulp.src(globs.docs)
+  return gulp.src(globs.docs)
     .pipe(concat('apiary.apib'))
     .pipe(gulp.dest('./'));
 });
 
 gulp.task('docs', ['concat-docs'], function () {
   gulp.src(globs.docs)
-  .pipe(aglio({
-    template: 'default'
-  }))
-  .pipe(gulp.dest('./docs'));
-  
+    .pipe(aglio({
+      template: 'default'
+    }))
+    .pipe(gulp.dest('./docs'));
+
   gulp.src('apiary.apib')
     .pipe(aglio({
       template: 'default'
     }))
     .pipe(concat('index.html'))
-    .pipe(gulp.dest('./docs'));
-});
-gulp.task('docs-server', ['docs'], function () {
-  gulp.src('.')
-    .pipe(webserver({
-      livereload: true,
-      directoryListing: true,
-      open: true
-    }));
+    .pipe(gulp.dest('./docs'))
+    .pipe(livereload());
 });
 
 gulp.task('mocha-server-continue', function (cb) {
@@ -133,12 +126,20 @@ gulp.task('watch', function () {
   var watching = false;
   gulp.start(
     'jshint',
-    'docs-server',
+    'docs',
     'mocha-server-continue',
     function () {
       // Protect against this function being called twice
       if (!watching) {
         watching = true;
+        livereload.listen();
+        nodemon({
+            script: 'app.js',
+            watch: globs.js.lib
+          })
+          .on('restart', function () {
+            console.log('restarted!');
+          });
         gulp.watch(globs.js.lib.concat(
           globs.js.specs), ['seq-test']);
         gulp.watch(globs.js.Gulpfile, ['jshint']);

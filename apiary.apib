@@ -6,26 +6,27 @@ HOST: https://api.hoist.io
 #Group Events
 All API's related to Events within Hoist.
 
-#Event Stream [/events?streamId={streamId}]
+#Event Stream [/events?streamId={streamId}&filterBy={filterBy}&filterValue={filterValue}&timeoutMs={timeoutMs}]
+
 A streaming API to get all events as they fire
 
 
-  + Model (application/json)
++ Model (application/json)
 
     + Body
 
-      {
-        streamId:{streamId},
-        events:[
-          {
-            "eventId":"1"
-            ...
-          },
-          {
-            "eventId":"2"
-            ...
-          }]
-      }
+            {
+                streamId:{streamId},
+                events:[
+                {
+                    "eventId":"1"
+                    ...
+                },
+                {
+                    "eventId":"2"
+                    ...
+                }]
+            }
 
 
 ## Retrieve Event Stream [GET]
@@ -61,24 +62,24 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 }
 ```
 
++ Parameters
 
-  + Parameters
+    + streamId (optional, string, `abc123`) ... the id of the stream to continue
+    + filterBy (optional, 'eventName' or 'correlationId', `eventName`) ... the field to filter the stream by
+    + filterValue (optional, string, `eventid`) ... the value to filter the stream by
+    + timeoutMs (optional, number, `20000`) ... the number of ms to timeout when no events are available (will return an empty array) defaults to 10000
 
-     + streamId (optional, string) ... the id of the stream to continue
-     + filterField (optional, 'eventName' or 'correlationId') ... the field to filter the stream by
-     + filterValue (optional, string) ... the value to filter the stream by
-     + timeoutMs (optional, number) ... the number of ms to timeout when no events are available (will return an empty array) defaults to 10000
++ Request
+    + Headers
 
-   + Request
-       + Headers
-           Content-Type: application/json
-           Authorization: Hoist {authKey}
-           X-Hoist-Filter-By: {filterField}
-           X-Hoist-Filter-Value: {filterValue}
-           X-Hoist-Connection-Timeout: {timeoutMs}
+            Content-Type: application/json
+            Authorization: Hoist {authKey}
+            X-Hoist-Filter-By: {filterBy}
+            X-Hoist-Filter-Value: {filterValue}
+            X-Hoist-Connection-Timeout: {timeoutMs}
 
-   + Response 200
-       [Event Stream][]
++ Response 200
+    [Event Stream][]
 
 #Event [/event/{id}]
 
@@ -86,43 +87,45 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 
     + Body
 
-      {
-        "eventId":"{id}",
-        "eventName":"eventName",
-        "correlationId":"correaltionId",
-        "createdAt":"2014-12-22T03:58:00.760Z"
-      }
+            {
+                "eventId":"{id}",
+                "eventName":"eventName",
+                "correlationId":"correaltionId",
+                "createdAt":"2014-12-22T03:58:00.760Z"
+            }
 
 ## Retrieve a single Event [GET]
-  + Parameters
 
-    + id (string) ... Id of the event to return
++ Parameters
 
-  + Request
+    + id (string, `eventid`) ... Id of the event to return
+
++ Request
 
     + Headers
 
-      Content-Type: application/json
-      Authorization: Hoist {authKey}
+              Content-Type: application/json
+              Authorization: Hoist {authKey}
 
-  + Response 200
++ Response 200
 
     [Event][]
 
 
 ## Add an event [POST]
 
-create a new event
-  + Parameters
+create a new event with the name specified in the body
 
-    + id (optional, string) ... the id of the event to create
++ Parameters
 
-  + Request
+    + id (optional, string, `eventid`) ... the id of the event to create
+
++ Request
 
     + Headers
 
-      Content-Type: application/json
-      Authorization: Hoist {authKey}
+            Content-Type: application/json
+            Authorization: Hoist {authKey}
 
     + Body
       ```
@@ -131,6 +134,5 @@ create a new event
       }
       ```
 
-  + Response 201
-
++ Response 201
     [Event][]
