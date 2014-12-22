@@ -1,4 +1,15 @@
 FORMAT: 1A
 HOST: https://api.hoist.io
 
-# hoist
+# Hoist HTTP API
+
+# Event API root [/events]
+
+
+## Retrieve Event Stream [GET]
++ Response 200 (application/json)
+ + Body
+    [{
+  "eventId":"{eventid}",
+  "eventName":"{eventName}"
+}]
