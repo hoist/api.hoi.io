@@ -1,8 +1,3 @@
-FORMAT: 1A
-HOST: https://api.hoist.io
-
-# Hoist HTTP API
-
 #Group Events
 All API's related to Events within Hoist.
 

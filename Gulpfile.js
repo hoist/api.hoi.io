@@ -5,6 +5,9 @@ var istanbul = require('gulp-istanbul');
 var mocha = require('gulp-mocha');
 var coverageEnforcer = require('gulp-istanbul-enforcer');
 var runSequence = require('run-sequence');
+var aglio = require('gulp-aglio');
+var concat = require('gulp-concat');
+var webserver = require('gulp-webserver');
 
 var globs = {
   js: {
@@ -12,7 +15,11 @@ var globs = {
     gulpfile: ['Gulpfile.js'],
     specs: ['tests/**/*.js', '!tests/fixtures/**/*']
   },
-  specs: ['tests/**/*.js', '!tests/fixtures/**/*']
+  specs: ['tests/**/*.js', '!tests/fixtures/**/*'],
+  docs: [
+    './docs/_root.md',
+    './docs/*.md'
+  ]
 };
 
 function runJshint() {
@@ -27,15 +34,15 @@ function runJshint() {
 
 function mochaServer(options) {
 
-  return gulp.src(globs.specs, {
-      read: false
-    })
-    .pipe(mocha(options || {
-      reporter: 'nyan',
-      growl: true
-    }));
-}
-// Testing
+    return gulp.src(globs.specs, {
+        read: false
+      })
+      .pipe(mocha(options || {
+        reporter: 'nyan',
+        growl: true
+      }));
+  }
+  // Testing
 var coverageOptions = {
   dir: './coverage',
   reporters: ['html', 'lcov', 'text-summary', 'html', 'json'],
@@ -51,7 +58,28 @@ gulp.task('jshint', function () {
   return runJshint();
 });
 
+gulp.task('concat-docs', function () {
+  gulp.src(globs.docs)
+    .pipe(concat('apiary.apib'))
+    .pipe(gulp.dest('./'));
+});
 
+gulp.task('docs', ['concat-docs'], function () {
+  gulp.src('apiary.apib')
+    .pipe(aglio({
+      template: 'default'
+    }))
+    .pipe(concat('index.html'))
+    .pipe(gulp.dest('./docs'));
+});
+gulp.task('docs-server', ['docs'], function () {
+  gulp.src('.')
+    .pipe(webserver({
+      livereload: true,
+      directoryListing: true,
+      open: true
+    }));
+});
 
 gulp.task('mocha-server-continue', function (cb) {
   gulp.src(globs.js.lib)
@@ -61,10 +89,10 @@ gulp.task('mocha-server-continue', function (cb) {
     })
     .on('finish', function () {
       mochaServer().on('error', function (err) {
-        console.trace(err);
-        this.emit('end');
-        cb();
-      }).pipe(istanbul.writeReports(coverageOptions))
+          console.trace(err);
+          this.emit('end');
+          cb();
+        }).pipe(istanbul.writeReports(coverageOptions))
         .on('end', cb);
     });
 });
@@ -87,8 +115,8 @@ gulp.task('mocha-server', function (cb) {
     .pipe(istanbul())
     .on('finish', function () {
       mochaServer({
-        reporter: 'spec'
-      })
+          reporter: 'spec'
+        })
         .pipe(istanbul.writeReports(coverageOptions))
         .on('end', cb);
     });
@@ -99,13 +127,16 @@ gulp.task('watch', function () {
   var watching = false;
   gulp.start(
     'jshint',
-    'mocha-server-continue', function () {
+    'docs-server',
+    'mocha-server-continue',
+    function () {
       // Protect against this function being called twice
       if (!watching) {
         watching = true;
         gulp.watch(globs.js.lib.concat(
           globs.js.specs), ['seq-test']);
         gulp.watch(globs.js.Gulpfile, ['jshint']);
+        gulp.watch(globs.docs, ['docs']);
       }
     });
 });
