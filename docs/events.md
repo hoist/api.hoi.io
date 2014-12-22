@@ -1,7 +1,7 @@
 #Group Events
 All API's related to Events within Hoist.
 
-#Event Stream [/events?streamId={streamId}&filterBy={filterBy}&filterValue={filterValue}&timeoutMs={timeoutMs}]
+#Event Stream [/events?token={token}&filterBy={filterBy}&filterValue={filterValue}&timeoutMs={timeoutMs}]
 
 A streaming API to get all events as they fire
 
@@ -11,7 +11,7 @@ A streaming API to get all events as they fire
     + Body
 
             {
-                streamId:{streamId},
+                token:{token},
                 events:[
                 {
                     "eventId":"1"
@@ -26,12 +26,12 @@ A streaming API to get all events as they fire
 
 ## Retrieve Event Stream [GET]
 
-Retrieves a stream of events and sets up a stream id.
-* Subsequent requests with the same stream id will return events since the last poll using that stream id, so it can be used to create a full stream.
+Retrieves a stream of events and sets up a stream token.
+* Subsequent requests with the same token will return events since the last poll using that token, so it can be used to create a full stream.
 
-* Initial requests can leave off the streamId and one will be generated for you.
+* Initial requests can leave off the token and one will be generated for you.
 
-* The streamId value will remain valid for 10 minutes after the last poll using the streamId.
+* The token value will remain valid for 10 minutes after the last poll using the token.
 
 eg.
 
@@ -41,7 +41,7 @@ Host: https://api.hoi.io
 Content-Type: application/json
 
 {
-    streamId:'abcdefg1234'
+    token:'abcdefg1234'
     events:[{
         eventName:'my-event'
     }]
@@ -49,12 +49,12 @@ Content-Type: application/json
 ```
 then
 ```http
-GET /events?streamId=abcdefg1234
+GET /events?token=abcdefg1234
 Host: https://api.hoi.io
 Content-Type: application/json
 
 {
-    streamId:'abcdefg1234',
+    token:'abcdefg1234',
     events:[{
         ... any events since last poll using the id
         }]
@@ -63,7 +63,7 @@ Content-Type: application/json
 
 + Parameters
 
-    + streamId (optional, string, `abc123`) ... the id of the stream to continue
+    + token (optional, string, `abc123`) ... the token returned in the last request to continue where it left off
     + filterBy (optional, 'eventName' or 'correlationId', `eventName`) ... the field to filter the stream by
     + filterValue (optional, string, `eventid`) ... the value to filter the stream by
     + timeoutMs (optional, number, `20000`) ... the number of ms to timeout when no events are available (will return an empty array) defaults to 10000
