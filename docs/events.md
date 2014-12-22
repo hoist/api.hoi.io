@@ -35,25 +35,29 @@ Retrieves a stream of events and sets up a stream id.
 
 eg.
 
-```
-GET https://api.hoi.io/events
-
-returns
-
-{
-  streamId:'abcdefg1234'
-events:[{
-  eventName:'my-event'
-  }]
-}
-
-GET https://api.hoi.io/events?streamId=abcdefg1234
+```http
+GET /events
+Host: https://api.hoi.io
+Content-Type: application/json
 
 {
-  streamId:'abcdefg1234',
-  events:[{
-    ... any events since last poll using the id
+    streamId:'abcdefg1234'
+    events:[{
+        eventName:'my-event'
     }]
+}
+```
+then
+```http
+GET /events?streamId=abcdefg1234
+Host: https://api.hoi.io
+Content-Type: application/json
+
+{
+    streamId:'abcdefg1234',
+    events:[{
+        ... any events since last poll using the id
+        }]
 }
 ```
 
@@ -91,6 +95,8 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 
 ## Retrieve a single Event [GET]
 
+Get the event with the specified id
+
 + Parameters
 
     + id (string, `eventid`) ... Id of the event to return
@@ -109,7 +115,7 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 
 ## Add an event [POST]
 
-create a new event with the name specified in the body
+Create a new event with the name specified in the body
 
 + Parameters
 

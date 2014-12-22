@@ -1,4 +1,5 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hoist HTTP API</title><link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200"><style>/* Highlight.js Theme Tomorrow */
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hoist HTTP API</title><link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css"><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200"><style>pre code{display:block;padding:.5em;color:#333}
+/* Highlight.js Theme Tomorrow */
 .hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}</style><style>body,
 h4,
 h5 {
@@ -56,7 +57,6 @@ h4 {
 }
 .panel-heading code {
   margin-left: 3px;
-  color: #c7254e;
   background-color: rgba(255,255,255,0.7);
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
@@ -92,6 +92,10 @@ a.list-group-item:hover {
 .list-group-item.collapsed .toggle .closed {
   display: block;
 }
+a.list-group-item:hover {
+  background-color: #f5f5f5;
+  border-left-color: #555;
+}
 a.list-group-item {
   font-size: 13px;
   white-space: nowrap;
@@ -100,10 +104,10 @@ a.list-group-item {
 }
 a.list-group-item.heading {
   font-size: 15px;
-  background-color: #f5f5f5;
+  background-color: #ecf0f1;
 }
 a.list-group-item.heading:hover {
-  background-color: #f8f8f8;
+  background-color: #f5f5f5;
 }
 .list-group-item.collapse {
   display: none;
@@ -138,9 +142,40 @@ a.list-group-item.heading:hover {
     max-width: 212px;
   }
 }
-</style></head><body><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><div class="col-md-3"><nav id="nav" class="hidden-sm hidden-xs affix nav"><div class="list-group"><a data-toggle="" data-target="#events-menu" href="#events" class="list-group-item heading collapsed">Events</a><div id="events-menu"><a href="#events-event-stream" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Event Stream</a><a href="#events-event" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item">Event</a><a href="#events-event-get" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span><span class="indent">Retrieve a single Event</span></a><a href="#events-event-post" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span><span class="indent">Add an event</span></a></div></div><p style="text-align: center; word-wrap: break-word;"><a href="https://api.hoist.io">https://api.hoist.io</a></p></nav></div><div class="col-md-8"><div><header><div class="page-header"><h1 id="top">Hoist HTTP API</h1></div></header><div class="description"></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="events">Events&nbsp;<a href="#events"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>All API’s related to Events within Hoist.</p>
-<h4 id="events-event-stream">Event Stream&nbsp;<a href="#events-event-stream"><i class="fa fa-link"></i></a></h4><p>A streaming API to get all events as they fire</p>
-<section id="events-event-stream-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrieve Event Stream</span></div><div style="float:left"><a href="#events-event-stream-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/events?streamId={streamId}&amp;filterBy={filterBy}&amp;filterValue={filterValue}&amp;timeoutMs={timeoutMs}</code></div></div><div class="panel-body"><p>Retrieves a stream of events and sets up a stream id.</p>
+</style></head><body><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><div class="col-md-3"><nav id="nav" class="hidden-sm hidden-xs affix nav"><div class="list-group"><a href="#" class="list-group-item heading">Home</a></div><div class="list-group"><a data-toggle="" data-target="#page:events-menu" href="#page:events" class="list-group-item heading collapsed">Events</a><div id="page:events-menu"><a href="#page:events,header:events-event-stream" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Event Stream</a><a href="#page:events,header:events-event" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item">Event</a><a href="#page:events,header:events-event-get" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span><span class="indent">Retrieve a single Event</span></a><a href="#page:events,header:events-event-post" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span><span class="indent">Add an event</span></a></div></div><p style="text-align: center; word-wrap: break-word;"><a href="https://api.hoist.io">https://api.hoist.io</a></p></nav></div><div class="col-md-8"><div data-bind="visible: page() == 'home'"><header><div class="page-header"><h1 id="top">Hoist HTTP API</h1></div></header><div class="description"><h2 id="url-root">URL Root</h2>
+<p>All urls have the root of <a href="https://api.hoi.io">https://api.hoi.io</a></p>
+<h2 id="authentication">Authentication</h2>
+<p>Hoist uses a token based authentication. All calls should be made with an Authorization header set to Hoist <apiKey> where API Key can be found in the Hoist portal at <a href="https://portal.hoist.io">https://portal.hoist.io</a></p>
+<p><img src="/screenshot.jpg" alt="screenshot here"></p>
+<pre><code class="lang-http"><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Hoist 23193slakdoqw3213</span>
+</code></pre>
+<h2 id="response-codes">Response Codes</h2>
+<p>Hoist uses standard REST style response codes and you should look up any response code in this table</p>
+<table>
+<thead>
+<tr>
+<th>Response Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 <code>OK</code></td>
+<td>Self evident</td>
+</tr>
+<tr>
+<td>201 <code>Created</code></td>
+<td>As <code>200 OK</code> but something was created in the call</td>
+</tr>
+<tr>
+<td>404 <code>Not Found</code></td>
+<td>The endpoint or expected object cannot be found</td>
+</tr>
+</tbody>
+</table>
+</div><a href="#page:events" class="btn btn-default pull-right">Next&nbsp;<i class="fa fa-arrow-circle-right"></i></a><div class="clearfix"></div><hr></div><div data-bind="visible: page() == 'events', style: {marginTop: page() == 'events' ? '38px' : ''}"><div class="panel panel-default"><div class="panel-heading"><h3 id="events">Events&nbsp;<a href="#page:events"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>All API’s related to Events within Hoist.</p>
+<h4 id="events-event-stream">Event Stream&nbsp;<a href="#page:events,header:events-event-stream"><i class="fa fa-link"></i></a></h4><p>A streaming API to get all events as they fire</p>
+<section id="events-event-stream-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrieve Event Stream</span></div><div style="float:left"><a href="#page:events,header:events-event-stream-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/events?streamId={streamId}&amp;filterBy={filterBy}&amp;filterValue={filterValue}&amp;timeoutMs={timeoutMs}</code></div></div><div class="panel-body"><p>Retrieves a stream of events and sets up a stream id.</p>
 <ul>
 <li><p>Subsequent requests with the same stream id will return events since the last poll using that stream id, so it can be used to create a full stream.</p>
 </li>
@@ -150,26 +185,30 @@ a.list-group-item.heading:hover {
 </li>
 </ul>
 <p>eg.</p>
-<pre><code>GET https://api.hoi.io/events
-
-returns
-
-{
-  streamId:<span class="hljs-string">'abcdefg1234'</span>
-events:[{
-  eventName:<span class="hljs-string">'my-event'</span>
-  }]
-}
-
-GET https://api.hoi.io/events?streamId=abcdefg1234
+<pre><code class="lang-http">GET /events
+Host: https://api.hoi.io
+Content-Type: application/json
 
 {
-  streamId:<span class="hljs-string">'abcdefg1234'</span>,
-  events:[{
-    <span class="hljs-keyword">...</span> any events since last poll using the id
+    streamId:&#39;abcdefg1234&#39;
+    events:[{
+        eventName:&#39;my-event&#39;
     }]
 }
-</code></pre></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>streamId</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abc123</span></span><p>the id of the stream to continue</p>
+</code></pre>
+<p>then</p>
+<pre><code class="lang-http">GET /events?streamId=abcdefg1234
+Host: https://api.hoi.io
+Content-Type: application/json
+
+{
+    streamId:&#39;abcdefg1234&#39;,
+    events:[{
+        ... any events since last poll using the id
+        }]
+}
+</code></pre>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>streamId</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abc123</span></span><p>the id of the stream to continue</p>
 </dd><dt>filterBy</dt><dd><code>'eventName' or 'correlationId'</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>eventName</span></span><p>the field to filter the stream by</p>
 </dd><dt>filterValue</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>eventid</span></span><p>the value to filter the stream by</p>
 </dd><dt>timeoutMs</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20000</span></span><p>the number of ms to timeout when no events are available (will return an empty array) defaults to 10000</p>
@@ -185,14 +224,15 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
         <span class="hljs-keyword">...</span>
     }]
 }
-</code></pre></li></ul></section><h4 id="events-event">Event&nbsp;<a href="#events-event"><i class="fa fa-link"></i></a></h4><section id="events-event-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrieve a single Event</span></div><div style="float:left"><a href="#events-event-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/event/{id}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>eventid</span></span><p>Id of the event to return</p>
+</code></pre></li></ul></section><h4 id="events-event">Event&nbsp;<a href="#page:events,header:events-event"><i class="fa fa-link"></i></a></h4><section id="events-event-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrieve a single Event</span></div><div style="float:left"><a href="#page:events,header:events-event-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/event/{id}</code></div></div><div class="panel-body"><p>Get the event with the specified id</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>eventid</span></span><p>Id of the event to return</p>
 </dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#6ee969ec7dc34d8761289c76103872d8" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6ee969ec7dc34d8761289c76103872d8" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Hoist {authKey}</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#b13a8499b0c567c960749ea8f0ff1974" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="b13a8499b0c567c960749ea8f0ff1974" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
     "<span class="hljs-attribute">eventId</span>":<span class="hljs-value"><span class="hljs-string">"{id}"</span></span>,
     "<span class="hljs-attribute">eventName</span>":<span class="hljs-value"><span class="hljs-string">"eventName"</span></span>,
     "<span class="hljs-attribute">correlationId</span>":<span class="hljs-value"><span class="hljs-string">"correaltionId"</span></span>,
     "<span class="hljs-attribute">createdAt</span>":<span class="hljs-value"><span class="hljs-string">"2014-12-22T03:58:00.760Z"</span>
 </span>}
-</code></pre></li></ul></section><section id="events-event-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Add an event</span></div><div style="float:left"><a href="#events-event-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/event/{id}</code></div></div><div class="panel-body"><p>create a new event with the name specified in the body</p>
+</code></pre></li></ul></section><section id="events-event-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Add an event</span></div><div style="float:left"><a href="#page:events,header:events-event-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/event/{id}</code></div></div><div class="panel-body"><p>Create a new event with the name specified in the body</p>
 </div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>eventid</span></span><p>the id of the event to create</p>
 </dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#45255fce3c452a8e624c1ba3726bcee2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="45255fce3c452a8e624c1ba3726bcee2" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Hoist {authKey}</span><br></code></pre><h5>Body</h5><pre><code>{
 "<span class="hljs-attribute">eventName</span>":<span class="hljs-value"><span class="hljs-string">"{eventName}"</span>
@@ -203,7 +243,7 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
     "<span class="hljs-attribute">correlationId</span>":<span class="hljs-value"><span class="hljs-string">"correaltionId"</span></span>,
     "<span class="hljs-attribute">createdAt</span>":<span class="hljs-value"><span class="hljs-string">"2014-12-22T03:58:00.760Z"</span>
 </span>}
-</code></pre></li></ul></section></div></div></div></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 22 Dec 2014</p><div id="localFile" style="display: none; position: absolute; top: 0; left: 0; width: 100%; color: white; background: red; font-size: 150%; text-align: center; padding: 1em;">This page may not display correctly when opened as a local file. Instead, view it from a web server.
+</code></pre></li></ul></section></div></div><a href="#" class="btn btn-default"><i class="fa fa-arrow-circle-left"></i> Previous</a><div class="clearfix"></div><hr></div></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 22 Dec 2014</p><div id="localFile" style="display: none; position: absolute; top: 0; left: 0; width: 100%; color: white; background: red; font-size: 150%; text-align: center; padding: 1em;">This page may not display correctly when opened as a local file. Instead, view it from a web server.
 
 </div></body><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script>(function() {
   if (location.protocol === 'file:') {
@@ -213,6 +253,42 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 }).call(this);
 </script><script>(function() {
   $('table').addClass('table');
+
+}).call(this);
+</script><script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script><script>(function() {
+  var App;
+
+  App = (function() {
+    function App() {
+      this.page = ko.observable('home');
+    }
+
+    return App;
+
+  })();
+
+  window.app = new App();
+
+  window.onhashchange = function() {
+    var parts, v, vars, _i, _len, _ref;
+    vars = {};
+    _ref = location.hash.substr(1).split(',');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      v = _ref[_i];
+      parts = v.split(':');
+      vars[parts[0]] = parts[1];
+    }
+    window.app.page(vars.page || 'home');
+    if (vars.header) {
+      return $("#" + vars.header)[0].scrollIntoView(true);
+    } else {
+      return window.scrollTo(0, 0);
+    }
+  };
+
+  ko.applyBindings(window.app);
+
+  window.onhashchange();
 
 }).call(this);
 </script></html>

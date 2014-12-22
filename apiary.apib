@@ -3,6 +3,28 @@ HOST: https://api.hoist.io
 
 # Hoist HTTP API
 
+## URL Root
+
+All urls have the root of https://api.hoi.io
+
+## Authentication
+Hoist uses a token based authentication. All calls should be made with an Authorization header set to Hoist <apiKey> where API Key can be found in the Hoist portal at https://portal.hoist.io
+
+![screenshot here](/screenshot.jpg)
+
+```http
+Authorization: Hoist 23193slakdoqw3213
+```
+
+## Response Codes
+Hoist uses standard REST style response codes and you should look up any response code in this table
+
+|Response Code | Meaning|
+|--------------|--------|
+|200 `OK`          | Self evident|
+|201 `Created`          | As `200 OK` but something was created in the call |
+|404 `Not Found`          | The endpoint or expected object cannot be found|
+
 #Group Events
 All API's related to Events within Hoist.
 
@@ -40,25 +62,29 @@ Retrieves a stream of events and sets up a stream id.
 
 eg.
 
-```
-GET https://api.hoi.io/events
-
-returns
-
-{
-  streamId:'abcdefg1234'
-events:[{
-  eventName:'my-event'
-  }]
-}
-
-GET https://api.hoi.io/events?streamId=abcdefg1234
+```http
+GET /events
+Host: https://api.hoi.io
+Content-Type: application/json
 
 {
-  streamId:'abcdefg1234',
-  events:[{
-    ... any events since last poll using the id
+    streamId:'abcdefg1234'
+    events:[{
+        eventName:'my-event'
     }]
+}
+```
+then
+```http
+GET /events?streamId=abcdefg1234
+Host: https://api.hoi.io
+Content-Type: application/json
+
+{
+    streamId:'abcdefg1234',
+    events:[{
+        ... any events since last poll using the id
+        }]
 }
 ```
 
@@ -96,6 +122,8 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 
 ## Retrieve a single Event [GET]
 
+Get the event with the specified id
+
 + Parameters
 
     + id (string, `eventid`) ... Id of the event to return
@@ -114,7 +142,7 @@ GET https://api.hoi.io/events?streamId=abcdefg1234
 
 ## Add an event [POST]
 
-create a new event with the name specified in the body
+Create a new event with the name specified in the body
 
 + Parameters
 

@@ -67,13 +67,13 @@ gulp.task('concat-docs', function () {
 gulp.task('docs', ['concat-docs'], function () {
   gulp.src(globs.docs)
     .pipe(aglio({
-      template: 'default'
+      template: 'flatly'
     }))
     .pipe(gulp.dest('./docs'));
 
   gulp.src('apiary.apib')
     .pipe(aglio({
-      template: 'default'
+      template: 'flatly-multi'
     }))
     .pipe(concat('index.html'))
     .pipe(gulp.dest('./docs'))
