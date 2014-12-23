@@ -85,8 +85,8 @@ Content-Type: application/json
 
             {
                 "eventId":"{id}",
-                "eventName":"eventName",
-                "correlationId":"correaltionId",
+                "eventName":"my:event",
+                "correlationId":"correlationid",
                 "createdAt":"2014-12-22T03:58:00.760Z",
                 "payload":{
                     "key":"value"
