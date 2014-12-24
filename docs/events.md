@@ -6,20 +6,18 @@ All API's related to Events within Hoist.
 A streaming API to get all events as they fire
 
 
-+ Model (application/json)
++ Model (application/json; charset=utf-8)
 
     + Body
 
             {
-                token:{token},
-                events:[
+                "token":"{token}",
+                "events":[
                 {
                     "eventId":"1"
-                    ...
                 },
                 {
                     "eventId":"2"
-                    ...
                 }]
             }
 
@@ -41,9 +39,9 @@ Host: https://api.hoi.io
 Content-Type: application/json
 
 {
-    token:'abcdefg1234'
-    events:[{
-        eventName:'my-event'
+    "token":"abcdefg1234"
+    "events":[{
+        "eventName":"my-event"
     }]
 }
 ```
@@ -54,8 +52,8 @@ Host: https://api.hoi.io
 Content-Type: application/json
 
 {
-    token:'abcdefg1234',
-    events:[{
+    "token":"abcdefg1234",
+    "events":[{
         ... any events since last poll using the id
         }]
 }
@@ -79,7 +77,7 @@ Content-Type: application/json
 
 # Get an event [/event/{id}]
 
-+ Model (application/json)
++ Model (application/json; charset=utf-8)
 
     + Body
 
