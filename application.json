@@ -5,9 +5,9 @@
   "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
   "error_file": "/var/log/node/hoist-http-host.stderr.log",
   "out_file": "/var/log/node/hoist-http-host.stdout.log",
-  "instances": "2",
+  "instances": "1",
   "merge_logs": true,
-  "exec_mode": "cluster_mode",
+  "exec_mode": "fork_mode",
   "env": {
     "NODE_ENV": "production"
   }

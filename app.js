@@ -2,7 +2,7 @@
 
 var server = require('./lib/server');
 var logger = require('hoist-logger');
-
+process.title = 'hoist-http-host';
 server.start().then(function () {
   logger.info('server started');
 });
