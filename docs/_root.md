@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://api.hoist.io
+HOST: https://api.hoi.io
 
 # Hoist HTTP API
 

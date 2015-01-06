@@ -7,7 +7,7 @@ var BBPromise = require('bluebird');
 var mongoose = BBPromise.promisifyAll(Model._mongoose);
 var config = require('config');
 var sinon = require('sinon');
-
+var pipeline = require('hoist-events-pipeline').Pipeline;
 
 describe('Event Routes', function () {
 
@@ -110,9 +110,79 @@ describe('Event Routes', function () {
   });
   describe('POST /event/{eventName}', function () {
     describe('with matching eventName', function () {
-      it('raises the event');
-      it('copies body to payload');
-      it('responds with 201 CREATED');
+      var _response;
+      var _event;
+      var clock;
+      var payload = {
+        key: 'value'
+      };
+      before(function (done) {
+        sinon.stub(pipeline.prototype, 'raise', function(eventName, payload){
+          return BBPromise.resolve(new Model.Event({
+            eventId: 'eventid',
+            applicationId: 'appid',
+            environment: 'live',
+            eventName: eventName,
+            payload: payload
+          }));
+        });
+        return server.inject({
+          method: 'POST',
+          url: '/event/eventName',
+          headers: {
+            authorization: 'Hoist apiKey',
+            'content-type': 'application/json'
+          },
+          payload: JSON.stringify(payload)
+        }, function (response) {
+          response.payload = JSON.parse(response.payload);
+          _response = response;
+          done()
+        });
+      });
+      after(function () {
+        pipeline.prototype.raise.restore();
+      });
+      it('raises the event', function () {
+        expect(pipeline.prototype.raise).to.have.been.calledWith('eventName', payload);
+      });
+      it('returns the event', function () {
+        expect(_response.payload.payload).to.eql(payload);
+        expect(_response.payload.eventName).to.eql('eventName');
+      });
+      it('responds with 201 CREATED', function () {
+        expect(_response.statusCode).to.eql(201);
+      });
+    });
+    describe('with pipeline.raise failing', function () {
+      var _response;
+      var _event;
+      var clock;
+      var payload = {
+        key: 'value'
+      };
+      before(function (done) {
+        sinon.stub(pipeline.prototype, 'raise').returns(BBPromise.reject());
+        return server.inject({
+          method: 'POST',
+          url: '/event/eventName',
+          headers: {
+            authorization: 'Hoist apiKey',
+            'content-type': 'application/json'
+          },
+          payload: JSON.stringify(payload)
+        }, function (response) {
+          response.payload = JSON.parse(response.payload);
+          _response = response;
+          done()
+        });
+      });
+      after(function () {
+        pipeline.prototype.raise.restore();
+      });
+      it('responds with a 500', function () {
+        expect(_response.statusCode).to.eql(500);
+      });
     });
   });
   describe('GET /events', function () {

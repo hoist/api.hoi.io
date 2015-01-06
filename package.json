@@ -40,7 +40,9 @@
     "boom": "^2.6.1",
     "config": "^1.9.0",
     "hapi": "^8.0.0",
+    "hoist-context": "git://github.com/hoist/hoist-context",
     "hoist-errors": "git://github.com/hoist/hoist-errors",
+    "hoist-events-pipeline": "git://github.com/hoist/hoist-events-pipeline",
     "hoist-logger": "git://github.com/hoist/hoist-logger",
     "hoist-model": "git://github.com/hoist/hoist-model",
     "lodash": "^2.4.1"
