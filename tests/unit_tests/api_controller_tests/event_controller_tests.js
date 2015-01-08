@@ -437,7 +437,7 @@ describe('Event Routes', function () {
               ev.updatedAt = ev.updatedAt.toISOString();
               return ev
             });
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
@@ -512,7 +512,7 @@ describe('Event Routes', function () {
               ev.updatedAt = ev.updatedAt.toISOString();
               return ev
             });
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
@@ -588,7 +588,7 @@ describe('Event Routes', function () {
               return ev
             });
             events = _.where(events, {correlationId: 'eventid'});
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
@@ -663,7 +663,7 @@ describe('Event Routes', function () {
               ev.updatedAt = ev.updatedAt.toISOString();
               return ev
             });
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
@@ -739,7 +739,7 @@ describe('Event Routes', function () {
               return ev
             });
             events = _.where(events, {eventName: 'eventName'});
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
@@ -814,7 +814,7 @@ describe('Event Routes', function () {
               ev.updatedAt = ev.updatedAt.toISOString();
               return ev
             });
-            expect(_response.payload.events).to.eql(events);
+            expect(_response.payload.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
             expect(_response.payload.token).to.not.eql('tokenCode');
