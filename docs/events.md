@@ -25,11 +25,13 @@ A streaming API to get all events as they fire
 ## Retrieve Event Stream [GET]
 
 Retrieves a stream of events and sets up a stream token.
-* Subsequent requests with the same token will return events since the last poll using that token, so it can be used to create a full stream.
 
 * Initial requests can leave off the token and one will be generated for you.
+\
 
-* The token value will remain valid for 10 minutes after the last poll using the token.
+* Subsequent requests with the token will return events since the token was created, a new token will be generated to continue the stream for future requests.
+
+* The token value will remain valid for 10 minutes after the token is created.
 
 eg.
 
@@ -52,7 +54,7 @@ Host: https://api.hoi.io
 Content-Type: application/json
 
 {
-    "token":"abcdefg1234",
+    "token":"<newToken>",
     "events":[{
         ... any events since last poll using the id
         }]
@@ -72,7 +74,7 @@ Content-Type: application/json
             Content-Type: application/json
             Authorization: Hoist {authKey}
 
-+ Response 200
++ Response 201
     [Event Stream][]
 
 # Get an event [/event/{id}]
