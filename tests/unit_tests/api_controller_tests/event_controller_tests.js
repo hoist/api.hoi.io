@@ -71,7 +71,7 @@ describe('Event Routes', function () {
         return Model.Event.removeAsync();
       });
       it('returns the event JSON', function () {
-        expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_event.toObject())));
+        expect(_response.result).to.eql(_event.toJSON());
       });
       it('responds with 200 OK', function () {
         expect(_response.statusCode).to.eql(200);
@@ -101,7 +101,7 @@ describe('Event Routes', function () {
         expect(_response.statusCode).to.eql(404);
       });
       it('responds with descriptive message', function () {
-        expect(JSON.parse(_response.payload)).to.eql({
+        expect(_response.result).to.eql({
           statusCode: 404,
           error: 'Not Found',
           message: 'event not found'
@@ -135,7 +135,6 @@ describe('Event Routes', function () {
           },
           payload: JSON.stringify(payload)
         }, function (response) {
-          response.payload = JSON.parse(response.payload);
           _response = response;
           done()
         });
@@ -147,8 +146,9 @@ describe('Event Routes', function () {
         expect(pipeline.prototype.raise).to.have.been.calledWith('eventName', payload);
       });
       it('returns the event', function () {
-        expect(_response.payload.payload).to.eql(payload);
-        expect(_response.payload.eventName).to.eql('eventName');
+        console.log(_response);
+        expect(_response.result.payload).to.eql(payload);
+        expect(_response.result.eventName).to.eql('eventName');
       });
       it('responds with 201 CREATED', function () {
         expect(_response.statusCode).to.eql(201);
@@ -207,7 +207,6 @@ describe('Event Routes', function () {
               authorization: 'Hoist apiKey'
             }
           }, function (response) {
-            response.payload = JSON.parse(response.payload);
             _response = response;
             done();
           });
@@ -225,13 +224,11 @@ describe('Event Routes', function () {
             });
         });
         it('returns an event', function () {
-          var event = _event.toObject();
-          event.createdAt = event.createdAt.toISOString();
-          event.updatedAt = event.updatedAt.toISOString();
-          expect(_response.payload.events).to.eql([event]);
+          var event = _event.toJSON();
+          expect(_response.result.events).to.eql([event]);
         });
         it('returns new token code', function () {
-          expect(_response.payload.token).to.exist;
+          expect(_response.result.token).to.exist;
         });
         it('responds with 201 CREATED', function () {
           expect(_response.statusCode).to.eql(201);
@@ -266,10 +263,10 @@ describe('Event Routes', function () {
               });
           });
           it('returns no events', function () {
-            expect(_response.payload.events).to.eql([]);
+            expect(_response.result.events).to.eql([]);
           });
           it('returns new token code', function () {
-            expect(_response.payload.token).to.exist;
+            expect(_response.result.token).to.exist;
           });
           it('returns after timeout', function () {
             return Model.EventToken.findOneAsync()
@@ -309,10 +306,10 @@ describe('Event Routes', function () {
               });
           });
           it('returns no events', function () {
-            expect(_response.payload.events).to.eql([]);
+            expect(_response.result.events).to.eql([]);
           });
           it('returns new token code', function () {
-            expect(_response.payload.token).to.exist;
+            expect(_response.result.token).to.exist;
           });
           it('returns after timeout', function () {
             return Model.EventToken.findOneAsync()
@@ -352,10 +349,10 @@ describe('Event Routes', function () {
               });
           });
           it('returns no events', function () {
-            expect(_response.payload.events).to.eql([]);
+            expect(_response.result.events).to.eql([]);
           });
           it('returns new token code', function () {
-            expect(_response.payload.token).to.exist;
+            expect(_response.result.token).to.exist;
           });
           it('returns after timeout', function () {
             return Model.EventToken.findOneAsync()
@@ -432,15 +429,13 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -483,7 +478,6 @@ describe('Event Routes', function () {
                     authorization: 'Hoist apiKey'
                   }
                 }, function (response) {
-                  response.payload = JSON.parse(response.payload);
                   _response = response;
                   done();
                 });
@@ -507,15 +501,13 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -558,7 +550,6 @@ describe('Event Routes', function () {
                     authorization: 'Hoist apiKey'
                   }
                 }, function (response) {
-                  response.payload = JSON.parse(response.payload);
                   _response = response;
                   done();
                 });
@@ -582,16 +573,14 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
             events = _.where(events, {correlationId: 'eventid'});
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -658,15 +647,13 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -733,16 +720,14 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
             events = _.where(events, {eventName: 'eventName'});
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -785,7 +770,6 @@ describe('Event Routes', function () {
                     authorization: 'Hoist apiKey'
                   }
                 }, function (response) {
-                  response.payload = JSON.parse(response.payload);
                   _response = response;
                   done();
                 });
@@ -809,15 +793,13 @@ describe('Event Routes', function () {
           });
           it('returns events stored since last use', function () {
             var events = _.map(_events, function (event) {
-              var ev = event.toObject();
-              ev.createdAt = ev.createdAt.toISOString();
-              ev.updatedAt = ev.updatedAt.toISOString();
-              return ev
+              var ev = event.toJSON();
+              return ev;
             });
-            expect(_response.payload.events).to.deep.have.members(events);
+            expect(_response.result.events).to.deep.have.members(events);
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('responds with 201 CREATED', function () {
             expect(_response.statusCode).to.eql(201);
@@ -853,7 +835,6 @@ describe('Event Routes', function () {
                     authorization: 'Hoist apiKey'
                   }
                 }, function (response) {
-                  response.payload = JSON.parse(response.payload);
                   _response = response;
                   done();
                 });
@@ -866,10 +847,8 @@ describe('Event Routes', function () {
             ])
           });
           it('returns an event', function () {
-            var event = _event.toObject();
-            event.createdAt = event.createdAt.toISOString();
-            event.updatedAt = event.updatedAt.toISOString();
-            expect(_response.payload.events).to.eql([event]);
+            var event = _event.toJSON();
+            expect(_response.result.events).to.eql([event]);
           });
           it('creates a new token', function () {
             return Model.EventToken.findOneAsync({
@@ -882,11 +861,11 @@ describe('Event Routes', function () {
               });
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('resets token timeout', function () {
             return Model.EventToken.findOneAsync({
-              code: _response.payload.token
+              code: _response.result.token
             }).then(function (token) {
               expect(token.lastUsed).to.be.above(_token.lastUsed);
             });
@@ -914,7 +893,6 @@ describe('Event Routes', function () {
                     authorization: 'Hoist apiKey'
                   }
                 }, function (response) {
-                  response.payload = JSON.parse(response.payload);
                   _response = response;
                   done();
                 });
@@ -924,7 +902,7 @@ describe('Event Routes', function () {
             return Model.EventToken.removeAsync();
           });
           it('returns no events', function () {
-            expect(_response.payload.events).to.eql([]);
+            expect(_response.result.events).to.eql([]);
           });
           it('creates a new token', function () {
             return Model.EventToken.findOneAsync({
@@ -937,11 +915,11 @@ describe('Event Routes', function () {
               });
           });
           it('returns the new token code', function () {
-            expect(_response.payload.token).to.not.eql('tokenCode');
+            expect(_response.result.token).to.not.eql('tokenCode');
           });
           it('returns after timeout', function () {
             return Model.EventToken.findOneAsync({
-              code: _response.payload.token
+              code: _response.result.token
             }).then(function (token) {
               expect(token.lastUsed).to.be.least(_token.lastUsed.getTime() + 2000);
             });
@@ -981,7 +959,6 @@ describe('Event Routes', function () {
                   authorization: 'Hoist apiKey'
                 }
               }, function (response) {
-                response.payload = JSON.parse(response.payload);
                 _response = response;
                 done();
               });
@@ -994,10 +971,8 @@ describe('Event Routes', function () {
           ])
         });
         it('returns an event', function () {
-          var event = _event.toObject();
-          event.createdAt = event.createdAt.toISOString();
-          event.updatedAt = event.updatedAt.toISOString();
-          expect(_response.payload.events).to.eql([event]);
+          var event = _event.toJSON();
+          expect(_response.result.events).to.eql([event]);
         });
         it('creates a new token', function () {
           return Model.EventToken.findOneAsync({
@@ -1010,7 +985,7 @@ describe('Event Routes', function () {
             });
         });
         it('returns new token code', function () {
-          expect(_response.payload.token).to.not.eql('tokenCode');
+          expect(_response.result.token).to.not.eql('tokenCode');
         });
         it('responds with 201 CREATED', function () {
           expect(_response.statusCode).to.eql(201);
@@ -1037,7 +1012,6 @@ describe('Event Routes', function () {
                   authorization: 'Hoist apiKey'
                 }
               }, function (response) {
-                response.payload = JSON.parse(response.payload);
                 _response = response;
                 done();
               });
@@ -1047,7 +1021,7 @@ describe('Event Routes', function () {
           return Model.EventToken.removeAsync();
         });
         it('returns no events', function () {
-          expect(_response.payload.events).to.eql([]);
+          expect(_response.result.events).to.eql([]);
         });
         it('creates a new token', function () {
           return Model.EventToken.findOneAsync({
@@ -1060,11 +1034,11 @@ describe('Event Routes', function () {
             });
         });
         it('returns new token code', function () {
-          expect(_response.payload.token).to.not.eql('tokenCode');
+          expect(_response.result.token).to.not.eql('tokenCode');
         });
         it('returns after timeout', function () {
           return Model.EventToken.findOneAsync({
-              code: _response.payload.token
+              code: _response.result.token
             })
             .then(function (token) {
               expect(token.lastUsed.getTime()).to.be.least(_time + 2000);
@@ -1104,7 +1078,6 @@ describe('Event Routes', function () {
                   authorization: 'Hoist apiKey'
                 }
               }, function (response) {
-                response.payload = JSON.parse(response.payload);
                 _response = response;
                 done();
               });
@@ -1117,10 +1090,8 @@ describe('Event Routes', function () {
           ])
         });
         it('returns an event', function () {
-          var event = _event.toObject();
-          event.createdAt = event.createdAt.toISOString();
-          event.updatedAt = event.updatedAt.toISOString();
-          expect(_response.payload.events).to.eql([event]);
+          var event = _event.toJSON();
+          expect(_response.result.events).to.eql([event]);
         });
         it('creates a new token', function () {
           return Model.EventToken.findOneAsync({
@@ -1133,7 +1104,7 @@ describe('Event Routes', function () {
             });
         });
         it('returns new token code', function () {
-          expect(_response.payload.token).to.not.eql('tokenCode');
+          expect(_response.result.token).to.not.eql('tokenCode');
         });
         it('responds with 201 CREATED', function () {
           expect(_response.statusCode).to.eql(201);
@@ -1160,7 +1131,6 @@ describe('Event Routes', function () {
                   authorization: 'Hoist apiKey'
                 }
               }, function (response) {
-                response.payload = JSON.parse(response.payload);
                 _response = response;
                 done();
               });
@@ -1170,7 +1140,7 @@ describe('Event Routes', function () {
           return Model.EventToken.removeAsync();
         });
         it('returns no events', function () {
-          expect(_response.payload.events).to.eql([]);
+          expect(_response.result.events).to.eql([]);
         });
         it('creates a new token', function () {
           return Model.EventToken.findOneAsync({
@@ -1183,7 +1153,7 @@ describe('Event Routes', function () {
             });
         });
         it('returns new token code', function () {
-          expect(_response.payload.token).to.not.eql('tokenCode');
+          expect(_response.result.token).to.not.eql('tokenCode');
         });
         it('returns after timeout', function () {
           return Model.EventToken.findOneAsync({
