@@ -146,7 +146,6 @@ describe('Event Routes', function () {
         expect(pipeline.prototype.raise).to.have.been.calledWith('eventName', payload);
       });
       it('returns the event', function () {
-        console.log(_response);
         expect(_response.result.payload).to.eql(payload);
         expect(_response.result.eventName).to.eql('eventName');
       });
