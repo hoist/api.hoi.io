@@ -1,22 +1,23 @@
 'use strict';
-
-var Server = require('./lib/server');
+require("babel/register");
 var logger = require('@hoist/logger');
-process.title = 'hoist-http-host';
-require('babel/register');
+var Server = require('./lib/server');
+process.title = 'api.hoi.io';
+
 var server = new Server();
 
-server.start().then(function () {
-  logger.info('server started');
-});
 process.on('message', function (msg) {
   if (msg === 'shutdown') {
     process.nextTick(function () {
-      server.stop()
-        .then(function () {
-          logger.info('closed server down');
-          process.exit(0);
-        });
+      server.stop(function () {
+        logger.info('server shutdown complete');
+        process.exit(0);
+      });
     });
+    logger.info('server shutdown initiated');
   }
 });
+
+
+server.start();
+logger.info('started');
