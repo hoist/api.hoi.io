@@ -1,17 +1,54 @@
 machine:
-  ruby:
-    version: 2.1.2
+  services:
+    - docker
   node:
-    version: v0.10.33
+    version: iojs-v1.8
+checkout:
+  post:
+    - git fetch --unshallow 2>/dev/null || true
+    - git fetch --tags
+    # Nasty hack: Because we get a freshly restored repo, timestamps do not
+    # correspond any more to when the file was last changed. To rectify this,
+    # first set everything to a timestamp in the past and then update the
+    # timestamp for all git-tracked files based on their last committed change.
+    - echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
+    - find . -exec touch -t 201401010000 {} \;
+    - for x in $(git ls-tree --full-tree --name-only -r HEAD); do touch -t $(date -d "$(git log -1 --format=%ci "${x}")" +%y%m%d%H%M.%S) "${x}"; done
+dependencies:
+  cache_directories:
+    - "~/docker"
+  override:
+    - mkdir -p ~/docker
+    - if [[ -e ~/docker/api.tar ]]; then docker load -i ~/docker/api.tar; fi
+    - docker build -t quay.io/hoist/api:${CIRCLE_BRANCH//feature\//} .
+    - docker save "quay.io/hoist/api" > ~/docker/api.tar
+test:
+  override:
+    - docker kill mongodb; true;
+    - docker rm mongodb; true;
+    - docker kill rabbitmq; true;
+    - docker rm rabbitmq; true;
+    - docker kill api-test; true;
+    - docker rm api-test; true;
+    - docker run -d --name mongodb mongo
+    - docker run -d -e RABBITMQ_NODENAME=rabbitmq --name rabbitmq rabbitmq:3-management
+    - docker run -t --link mongodb:db --link rabbitmq:rabbitmq --name api-test --entrypoint gulp quay.io/hoist/api:${CIRCLE_BRANCH//feature\//} test
+  post:
+    - docker cp api-test:/usr/src/app/coverage ~/
 general:
   artifacts:
-    - coverage/*
-    - coverage/**/*
+    - ~/coverage/*
+    - ~/coverage/**/*
     - log/*.log
     - npm-debug.log
 deployment:
-  production:
-    branch: master
+  master:
+    branch: [master,/feature\/.*/]
+    owner: hoist
     commands:
-      - git submodule add git@github.com:hoist/deploy.git
-      - cd deploy && bundle install && bundle exec cap web_servers deploy
+      - echo ${DOCKER_CONFIG} > .dockercfg
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - docker push quay.io/hoist/api:${CIRCLE_BRANCH//feature\//}
+notify:
+  webhooks:
+    - url: https://overlord.hoist.io/api/webhook/circleci?api_token=xc1zrzacmxp9samlj9nya4gzay
