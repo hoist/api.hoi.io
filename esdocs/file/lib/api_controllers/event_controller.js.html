@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">lib/api_controllers/event_controller.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+</head>
+<body class="layout-container">
+
+<header>
+  <a href="./">Home</a>
+  <a href="identifiers.html">Identifier</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <a data-ice="repoURL" href="https://github.com/hoist/hoist-http-host.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div data-ice="classWrap">
+  <h2>Class</h2>
+  <ul>
+    
+  <li data-ice="classDoc"><span><a href="class/lib/api_controllers/bucket_controller.js~BucketController.html">BucketController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/api_controllers/event_controller.js~EventController.html">EventController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/authentication/hoist_plugin.js~HoistAuthentication.html">HoistAuthentication</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/router.js~Router.html">Router</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/server.js~Server.html">Server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="functionWrap">
+  <h2><a href="function/">Function</a></h2>
+  <ul>
+    
+  <li data-ice="functionDoc"><span><a href="function/index.html#static-function-register">register</a></span></li>
+</ul>
+</div>
+
+<div data-ice="variableWrap">
+  <h2><a href="variable/">Variable</a></h2>
+  <ul>
+    
+  <li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-bucketController">bucketController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-eventController">eventController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-hoistAuthentication">hoistAuthentication</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-router">router</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-server">server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="externalWrap">
+  <h2>External</h2>
+  <ul>
+    
+  <li data-ice="externalDoc"><span><a href="http://hapijs.com/api#server">HapiServer</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#reply-interface">Reply</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#request-object">Request</a></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">lib/api_controllers/event_controller.js</h1>
+<pre class="source-code line-number"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+import Boom from &apos;boom&apos;;
+import errors from &apos;@hoist/errors&apos;;
+import logger from &apos;@hoist/logger&apos;;
+import Pipeline from &apos;@hoist/events-pipeline&apos;;
+
+/**
+ * API Controller for /event endpoints
+ */
+class EventController {
+  /**
+   * create new instance
+   */
+  constructor() {
+    this._logger = logger.child({
+      cls: this.constructor.name
+    });
+    this._pipeline = new Pipeline();
+  }
+
+  /**
+   * create a brand new event
+   * @param {Request} req - the Hapi Request object
+   * @param {Reply} reply - the Hapi Reply object
+   * @returns {Promise}
+   */
+  createEvent(req, reply) {
+    return this._pipeline.raise(req.auth.credentials, req.params.eventName, req.payload)
+      .then((ev) =&gt; {
+        reply(ev)
+          .type(&apos;application/json; charset=utf-8&apos;)
+          .code(201);
+      }).catch((err) =&gt; {
+        if (!errors.isHoistError(err)) {
+          logger.error(err);
+          err = new errors.HoistError();
+        }
+        reply(Boom.wrap(err, parseInt(err.code)));
+      });
+  }
+
+  /**
+   * get an event
+   * @depreciated
+   */
+  getEvent(req, reply) {
+    reply(new Boom());
+  }
+
+  /**
+   * get an event in a stream or continue an existing stream
+   * @param {Request} req - the Hapi Request object
+   * @param {Reply} reply - the Hapi Reply object
+   * @returns {Promise}
+   */
+  getStream(req, reply) {
+    reply(new Boom());
+  }
+
+  /**
+   * map routes for this controller
+   * @param {HapiServer} server - the Hapi Server instance
+   */
+  mapRoutes(server) {
+    this._logger.info(&apos;mapping server routes&apos;);
+    let routePrefix = &apos;/event&apos;;
+    server.route([{
+      // GET /events
+      path: routePrefix + &apos;s&apos;,
+      method: [&apos;GET&apos;],
+      handler: this.getStream,
+      config: {
+        auth: &apos;hoist&apos;,
+        bind: this
+      }
+    }, {
+      // GET /event
+      path: routePrefix + &apos;/{id}&apos;,
+      method: [&apos;GET&apos;],
+      handler: this.getEvent,
+      config: {
+        auth: &apos;hoist&apos;,
+        bind: this
+      }
+    }, {
+      // POST /event/eventName
+
+      path: routePrefix + &apos;/{eventName}&apos;,
+      method: [&apos;POST&apos;],
+      handler: this.createEvent,
+      config: {
+        auth: &apos;hoist&apos;,
+        bind: this
+      }
+    }]);
+  }
+}
+
+export default EventController;
+
+/*
+
+function checkEvents(appId, lastPoll, filterBy, filterValue) {
+  var findProperties = {
+    applicationId: appId,
+    environment: &apos;live&apos;,
+    createdAt: {
+      $gt: lastPoll
+    }
+  };
+  if (filterBy === &apos;eventName&apos; &amp;&amp; filterValue) {
+    findProperties.eventName = filterValue;
+  } else if (filterBy === &apos;correlationId&apos; &amp;&amp; filterValue) {
+    findProperties.correlationId = filterValue;
+  }
+  return Model.Event.findAsync(findProperties);
+}
+
+function checkEventsTimeout(token, req, reply) {
+  var start = token ? token.lastUsed.getTime() : req.info.received;
+  var finish = req.info.received + req.query.timeoutMS;
+  var interval = setInterval(function () {
+    var pollDate = Date.now();
+    checkEvents(req.auth.credentials._id, start, req.query.filterBy, req.query.filterValue)
+      .then(function (events) {
+        if (events.length || Date.now() &gt;= finish) {
+          clearInterval(interval);
+          events = _.map(events, function (ev) {
+            return ev.toObject();
+          });
+          new Model.EventToken({
+            application: req.auth.credentials._id,
+            environment: &apos;live&apos;,
+            lastUsed: pollDate
+          }).saveAsync().then(function (newToken) {
+            reply({
+              token: newToken.code,
+              events: events
+            }).code(201);
+          });
+        }
+      });
+  }, 100);
+}
+
+EventController.prototype.getStream = function (req, reply) {
+  req.query.timeoutMS = req.query.timeoutMS &amp;&amp; !isNaN(req.query.timeoutMS) ? parseInt(req.query.timeoutMS) : 10000;
+  BBPromise.method(function () {
+    if (req.query.token) {
+      return Model.EventToken.findOneAsync({
+        code: req.query.token,
+        application: req.auth.credentials._id,
+        environment: &apos;live&apos;
+      });
+    }
+    return null;
+  })().then(function (token) {
+    if (token &amp;&amp; token.lastUsed &gt; req.info.received - 10 * 60 * 1000) {
+      var pollDate = Date.now();
+      return checkEvents(req.auth.credentials._id, token.lastUsed, req.query.filterBy, req.query.filterValue)
+        .then(function (events) {
+          if (events &amp;&amp; events.length) {
+            events = _.map(events, function (ev) {
+              return ev.toObject();
+            });
+            new Model.EventToken({
+              application: req.auth.credentials._id,
+              environment: &apos;live&apos;,
+              lastUsed: pollDate
+            }).saveAsync().then(function (newToken) {
+              reply({
+                token: newToken.code,
+                events: events
+              }).code(201);
+            });
+          } else {
+            checkEventsTimeout(token, req, reply);
+          }
+        });
+    } else {
+      checkEventsTimeout(null, req, reply);
+    }
+  });
+};
+EventController.prototype.;
+EventController.prototype.;
+EventController.prototype.getRoutes = function () {
+  return routes;
+};
+var eventPrefix = &apos;/event&apos;;
+var controller = new EventController();
+routes = ;
+
+module.exports = controller;
+*/
+</code></pre>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.1.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

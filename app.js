@@ -1,8 +1,11 @@
 'use strict';
 
-var server = require('./lib/server');
-var logger = require('hoist-logger');
+var Server = require('./lib/server');
+var logger = require('@hoist/logger');
 process.title = 'hoist-http-host';
+require('babel/register');
+var server = new Server();
+
 server.start().then(function () {
   logger.info('server started');
 });

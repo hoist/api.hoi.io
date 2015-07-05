@@ -1,0 +1,1895 @@
+[
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "lib/api_controllers/bucket_controller.js",
+    "memberof": null,
+    "longname": "lib/api_controllers/bucket_controller.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nimport Boom from 'boom';\nimport errors from '@hoist/errors';\nimport logger from '@hoist/logger';\nimport BucketPipeline from '@hoist/bucket-pipeline';\n\n/**\n * controlls api routes under /bucket\n */\n\nclass BucketController {\n  /**\n   * construct a new BucketController\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._pipeline = new BucketPipeline();\n  }\n\n  /**\n   * get a single bucket\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getBucket(req, reply) {\n    if (!req.params.key) {\n      throw new errors.Http404Error('no bucket key');\n    }\n    this._logger.info('retrieving bucket');\n\n    return this._pipeline.get(req.auth.credentials, req.params.key).then((bucket) => {\n\n      if (!bucket) {\n        this._logger.info('unable to find bucket');\n        throw new errors.Http404Error('bucket not found @ ' + req.params.key);\n      }\n      this._logger.info('found bucket');\n      reply(bucket.toObject());\n    }).catch((err) => {\n      this._logger.error(err);\n      if (!errors.isHoistError(err)) {\n        this._logger.error(err);\n        err = new errors.HoistError();\n      }\n      reply(Boom.wrap(err, parseInt(err.code)));\n    });\n  }\n\n  /**\n   * map routes for this controller\n   * @param {HapiServer} server - the Hapi Server instance\n   */\n  mapRoutes(server) {\n    this._logger.info('mapping server routes');\n    let routePrefix = '/bucket';\n    server.route({\n      // GET /bucket/\n      path: routePrefix + '/{key}',\n      method: ['GET'],\n      handler: this.getBucket,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    });\n  }\n\n}\n\n\n\nexport default BucketController;\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "BucketController",
+    "memberof": "lib/api_controllers/bucket_controller.js",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/bucket_controller.js",
+    "importStyle": "BucketController",
+    "description": "controlls api routes under /bucket",
+    "lineNumber": 12,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "lib/api_controllers/bucket_controller.js~BucketController",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController#constructor",
+    "access": null,
+    "description": "construct a new BucketController",
+    "lineNumber": 16,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_logger",
+    "memberof": "lib/api_controllers/bucket_controller.js~BucketController",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController#_logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_pipeline",
+    "memberof": "lib/api_controllers/bucket_controller.js~BucketController",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController#_pipeline",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "getBucket",
+    "memberof": "lib/api_controllers/bucket_controller.js~BucketController",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController#getBucket",
+    "access": null,
+    "description": "get a single bucket",
+    "lineNumber": 29,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": "the Hapi Request object"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Reply"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "reply",
+        "description": "the Hapi Reply object"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "mapRoutes",
+    "memberof": "lib/api_controllers/bucket_controller.js~BucketController",
+    "longname": "lib/api_controllers/bucket_controller.js~BucketController#mapRoutes",
+    "access": null,
+    "description": "map routes for this controller",
+    "lineNumber": 57,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "HapiServer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "server",
+        "description": "the Hapi Server instance"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "bucketController",
+    "memberof": "lib/api_controllers/bucket_controller.js",
+    "longname": "lib/api_controllers/bucket_controller.js~bucketController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/bucket_controller.js",
+    "importStyle": "bucketController",
+    "description": null,
+    "lineNumber": 76,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/api_controllers/bucket_controller.js~BucketController"
+      ]
+    }
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "lib/api_controllers/event_controller.js",
+    "memberof": null,
+    "longname": "lib/api_controllers/event_controller.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\nimport Boom from 'boom';\nimport errors from '@hoist/errors';\nimport logger from '@hoist/logger';\nimport Pipeline from '@hoist/events-pipeline';\n\n/**\n * API Controller for /event endpoints\n */\nclass EventController {\n  /**\n   * create new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._pipeline = new Pipeline();\n  }\n\n  /**\n   * create a brand new event\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  createEvent(req, reply) {\n    return this._pipeline.raise(req.auth.credentials, req.params.eventName, req.payload)\n      .then((ev) => {\n        reply(ev)\n          .type('application/json; charset=utf-8')\n          .code(201);\n      }).catch((err) => {\n        if (!errors.isHoistError(err)) {\n          logger.error(err);\n          err = new errors.HoistError();\n        }\n        reply(Boom.wrap(err, parseInt(err.code)));\n      });\n  }\n\n  /**\n   * get an event\n   * @depreciated\n   */\n  getEvent(req, reply) {\n    reply(new Boom());\n  }\n\n  /**\n   * get an event in a stream or continue an existing stream\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getStream(req, reply) {\n    reply(new Boom());\n  }\n\n  /**\n   * map routes for this controller\n   * @param {HapiServer} server - the Hapi Server instance\n   */\n  mapRoutes(server) {\n    this._logger.info('mapping server routes');\n    let routePrefix = '/event';\n    server.route([{\n      // GET /events\n      path: routePrefix + 's',\n      method: ['GET'],\n      handler: this.getStream,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // GET /event\n      path: routePrefix + '/{id}',\n      method: ['GET'],\n      handler: this.getEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // POST /event/eventName\n\n      path: routePrefix + '/{eventName}',\n      method: ['POST'],\n      handler: this.createEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }]);\n  }\n}\n\nexport default EventController;\n\n/*\n\nfunction checkEvents(appId, lastPoll, filterBy, filterValue) {\n  var findProperties = {\n    applicationId: appId,\n    environment: 'live',\n    createdAt: {\n      $gt: lastPoll\n    }\n  };\n  if (filterBy === 'eventName' && filterValue) {\n    findProperties.eventName = filterValue;\n  } else if (filterBy === 'correlationId' && filterValue) {\n    findProperties.correlationId = filterValue;\n  }\n  return Model.Event.findAsync(findProperties);\n}\n\nfunction checkEventsTimeout(token, req, reply) {\n  var start = token ? token.lastUsed.getTime() : req.info.received;\n  var finish = req.info.received + req.query.timeoutMS;\n  var interval = setInterval(function () {\n    var pollDate = Date.now();\n    checkEvents(req.auth.credentials._id, start, req.query.filterBy, req.query.filterValue)\n      .then(function (events) {\n        if (events.length || Date.now() >= finish) {\n          clearInterval(interval);\n          events = _.map(events, function (ev) {\n            return ev.toObject();\n          });\n          new Model.EventToken({\n            application: req.auth.credentials._id,\n            environment: 'live',\n            lastUsed: pollDate\n          }).saveAsync().then(function (newToken) {\n            reply({\n              token: newToken.code,\n              events: events\n            }).code(201);\n          });\n        }\n      });\n  }, 100);\n}\n\nEventController.prototype.getStream = function (req, reply) {\n  req.query.timeoutMS = req.query.timeoutMS && !isNaN(req.query.timeoutMS) ? parseInt(req.query.timeoutMS) : 10000;\n  BBPromise.method(function () {\n    if (req.query.token) {\n      return Model.EventToken.findOneAsync({\n        code: req.query.token,\n        application: req.auth.credentials._id,\n        environment: 'live'\n      });\n    }\n    return null;\n  })().then(function (token) {\n    if (token && token.lastUsed > req.info.received - 10 * 60 * 1000) {\n      var pollDate = Date.now();\n      return checkEvents(req.auth.credentials._id, token.lastUsed, req.query.filterBy, req.query.filterValue)\n        .then(function (events) {\n          if (events && events.length) {\n            events = _.map(events, function (ev) {\n              return ev.toObject();\n            });\n            new Model.EventToken({\n              application: req.auth.credentials._id,\n              environment: 'live',\n              lastUsed: pollDate\n            }).saveAsync().then(function (newToken) {\n              reply({\n                token: newToken.code,\n                events: events\n              }).code(201);\n            });\n          } else {\n            checkEventsTimeout(token, req, reply);\n          }\n        });\n    } else {\n      checkEventsTimeout(null, req, reply);\n    }\n  });\n};\nEventController.prototype.;\nEventController.prototype.;\nEventController.prototype.getRoutes = function () {\n  return routes;\n};\nvar eventPrefix = '/event';\nvar controller = new EventController();\nroutes = ;\n\nmodule.exports = controller;\n*/\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "EventController",
+    "memberof": "lib/api_controllers/event_controller.js",
+    "longname": "lib/api_controllers/event_controller.js~EventController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/event_controller.js",
+    "importStyle": "EventController",
+    "description": "API Controller for /event endpoints",
+    "lineNumber": 10,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#constructor",
+    "access": null,
+    "description": "create new instance",
+    "lineNumber": 14,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_logger",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#_logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_pipeline",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#_pipeline",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "createEvent",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#createEvent",
+    "access": null,
+    "description": "create a brand new event",
+    "lineNumber": 27,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": "the Hapi Request object"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Reply"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "reply",
+        "description": "the Hapi Reply object"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "getEvent",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#getEvent",
+    "access": null,
+    "description": "get an event",
+    "lineNumber": 46,
+    "unknown": [
+      {
+        "tagName": "@depreciated",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "req",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "reply",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "getStream",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#getStream",
+    "access": null,
+    "description": "get an event in a stream or continue an existing stream",
+    "lineNumber": 56,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": "the Hapi Request object"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Reply"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "reply",
+        "description": "the Hapi Reply object"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "mapRoutes",
+    "memberof": "lib/api_controllers/event_controller.js~EventController",
+    "longname": "lib/api_controllers/event_controller.js~EventController#mapRoutes",
+    "access": null,
+    "description": "map routes for this controller",
+    "lineNumber": 64,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "HapiServer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "server",
+        "description": "the Hapi Server instance"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "eventController",
+    "memberof": "lib/api_controllers/event_controller.js",
+    "longname": "lib/api_controllers/event_controller.js~eventController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/event_controller.js",
+    "importStyle": "eventController",
+    "description": null,
+    "lineNumber": 99,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/api_controllers/event_controller.js~EventController"
+      ]
+    }
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "lib/authentication/hoist_plugin.js",
+    "memberof": null,
+    "longname": "lib/authentication/hoist_plugin.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nimport Boom from 'boom';\nimport logger from '@hoist/logger';\nimport {\n  Application\n}\nfrom '@hoist/model';\nimport Context from '@hoist/context';\n\n/**\n * an authentication scheme for Hoist requests\n */\nclass HoistAuthentication {\n  /**\n   * construct a new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n  }\n\n  /**\n   * map this instance for the Hapi Scheme\n   */\n  scheme() {\n    return () => {\n      return this;\n    };\n  }\n\n  /**\n   * authenticate the request\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  authenticate(request, reply) {\n    this._logger.info('in authenticte');\n    var req = request.raw.req;\n    var authorization = req.headers.authorization;\n    if (!authorization) {\n      this._logger.info('no authorization header');\n      return reply(Boom.unauthorized(null, 'Hoist'));\n    }\n    this._logger.info('getting auth parts');\n    var parts = authorization.split(/\\s+/);\n\n\n    if (parts[0].toLowerCase() !== 'hoist') {\n      this._logger.warn('not a hoist authorization header');\n      return reply(Boom.unauthorized(null, 'Hoist'));\n    }\n\n    if (parts.length !== 2) {\n      this._logger.warn('not a valid authorization header');\n      return reply(Boom.badRequest('Bad HTTP authentication header format', 'Hoist'));\n    }\n    var apiKey = parts[1];\n    this._logger.info('finding application');\n    return Application.findOneAsync({\n      apiKey: apiKey\n    }).then((application) => {\n      if (!application) {\n        this._logger.warn('not a valid api key');\n        return reply(Boom.unauthorized('Invalid API Key', 'Hoist'));\n      }\n      this._logger.info('authenticated');\n      let context = new Context({\n        application: application.toObject(),\n        environment: 'live'\n      });\n      reply.continue({\n        credentials: context\n      });\n    });\n  }\n}\n\nvar hoist = new HoistAuthentication();\nexport default HoistAuthentication;\n\n/**\n * register the hoist authentication scheme\n */\nexport function register(server, options, next) {\n  server.auth.scheme('hoist', hoist.scheme());\n  server.auth.strategy('hoist', 'hoist');\n  next();\n}\nregister.attributes = {\n  pkg: {\n    \"name\": \"hoist-api-key-auth\",\n    \"description\": \"Hoist API Key Authentication\",\n    \"version\": \"1.0.0\"\n  }\n};\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "hoist",
+    "memberof": "lib/authentication/hoist_plugin.js",
+    "longname": "lib/authentication/hoist_plugin.js~hoist",
+    "access": null,
+    "export": false,
+    "importPath": "api.hoi.io/lib/authentication/hoist_plugin.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 81,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/authentication/hoist_plugin.js~HoistAuthentication"
+      ]
+    }
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "register",
+    "memberof": "lib/authentication/hoist_plugin.js",
+    "longname": "lib/authentication/hoist_plugin.js~register",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/authentication/hoist_plugin.js",
+    "importStyle": "{register}",
+    "description": "register the hoist authentication scheme",
+    "lineNumber": 87,
+    "params": [
+      {
+        "name": "server",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "next",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "HoistAuthentication",
+    "memberof": "lib/authentication/hoist_plugin.js",
+    "longname": "lib/authentication/hoist_plugin.js~HoistAuthentication",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/authentication/hoist_plugin.js",
+    "importStyle": "HoistAuthentication",
+    "description": "an authentication scheme for Hoist requests",
+    "lineNumber": 14,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "lib/authentication/hoist_plugin.js~HoistAuthentication",
+    "longname": "lib/authentication/hoist_plugin.js~HoistAuthentication#constructor",
+    "access": null,
+    "description": "construct a new instance",
+    "lineNumber": 18,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_logger",
+    "memberof": "lib/authentication/hoist_plugin.js~HoistAuthentication",
+    "longname": "lib/authentication/hoist_plugin.js~HoistAuthentication#_logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "scheme",
+    "memberof": "lib/authentication/hoist_plugin.js~HoistAuthentication",
+    "longname": "lib/authentication/hoist_plugin.js~HoistAuthentication#scheme",
+    "access": null,
+    "description": "map this instance for the Hapi Scheme",
+    "lineNumber": 27,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "authenticate",
+    "memberof": "lib/authentication/hoist_plugin.js~HoistAuthentication",
+    "longname": "lib/authentication/hoist_plugin.js~HoistAuthentication#authenticate",
+    "access": null,
+    "description": "authenticate the request",
+    "lineNumber": 39,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Request"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "req",
+        "description": "the Hapi Request object"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Reply"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "reply",
+        "description": "the Hapi Reply object"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "hoistAuthentication",
+    "memberof": "lib/authentication/hoist_plugin.js",
+    "longname": "lib/authentication/hoist_plugin.js~hoistAuthentication",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/authentication/hoist_plugin.js",
+    "importStyle": "hoistAuthentication",
+    "description": null,
+    "lineNumber": 82,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/authentication/hoist_plugin.js~HoistAuthentication"
+      ]
+    }
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "lib/router.js",
+    "memberof": null,
+    "longname": "lib/router.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\n\nimport EventController from './api_controllers/event_controller';\nimport BucketController from './api_controllers/bucket_controller';\n\n/**\n * map routes for this server\n */\nclass Router {\n\n  /**\n   * map the routes to the server\n   * @param {HapiServer} server\n   */\n  map(server) {\n    let eventController = new EventController();\n    eventController.mapRoutes(server);\n    let bucketController = new BucketController();\n    bucketController.mapRoutes(server);\n    server.route({\n      method: 'GET',\n      path: '/',\n      handler: function (request, reply) {\n        reply.file('./docs/index.html');\n      }\n    });\n  }\n}\n\nexport default Router;\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Router",
+    "memberof": "lib/router.js",
+    "longname": "lib/router.js~Router",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/router.js",
+    "importStyle": "Router",
+    "description": "map routes for this server",
+    "lineNumber": 9,
+    "interface": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "map",
+    "memberof": "lib/router.js~Router",
+    "longname": "lib/router.js~Router#map",
+    "access": null,
+    "description": "map the routes to the server",
+    "lineNumber": 15,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "HapiServer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "server",
+        "description": ""
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "router",
+    "memberof": "lib/router.js",
+    "longname": "lib/router.js~router",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/router.js",
+    "importStyle": "router",
+    "description": null,
+    "lineNumber": 30,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/router.js~Router"
+      ]
+    }
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "lib/server.js",
+    "memberof": null,
+    "longname": "lib/server.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\nimport Bluebird from 'bluebird';\nimport {\n  _mongoose\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport Router from './router';\nimport logger from '@hoist/logger';\nimport Hapi from 'hapi';\nBluebird.promisifyAll(_mongoose);\n\n/**\n * a wrapper around the HapiServer\n */\n\nclass Server {\n\n  /**\n   * create a new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._router = new Router();\n  }\n\n  _configurePlugins() {\n    this._hapiServer.register([\n      require('./authentication/hoist_plugin')\n    ], function () {\n\n    });\n  }\n  _createServer() {\n    this._hapiServer = new Hapi.Server();\n    this._hapiServer.connection({\n      host: config.get('Hoist.http.host'),\n      port: config.get('Hoist.http.port')\n    });\n    this._configurePlugins();\n    this._router.map(this._hapiServer);\n    Bluebird.promisifyAll(this._hapiServer);\n\n  }\n\n  /**\n   * start the server and configure it\n   */\n  start() {\n    this._createServer();\n    return this._hapiServer.startAsync()\n      .then(function () {\n        return _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString'));\n      });\n  }\n\n  /**\n   * stop the server\n   */\n  stop() {\n    return this._hapiServer.stopAsync()\n      .then(function () {\n        return _mongoose.disconnectAsync();\n      });\n  }\n}\n\nexport default Server;\n\n/**\n * @external {HapiServer} http://hapijs.com/api#server\n */\n\n/**\n * @external {Request} http://hapijs.com/api#request-object\n */\n\n/**\n * @external {Reply} http://hapijs.com/api#reply-interface\n */\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Server",
+    "memberof": "lib/server.js",
+    "longname": "lib/server.js~Server",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/server.js",
+    "importStyle": "Server",
+    "description": "a wrapper around the HapiServer",
+    "lineNumber": 17,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#constructor",
+    "access": null,
+    "description": "create a new instance",
+    "lineNumber": 22,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_logger",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#_logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_router",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#_router",
+    "access": null,
+    "description": null,
+    "lineNumber": 26,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_configurePlugins",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#_configurePlugins",
+    "access": null,
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_createServer",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#_createServer",
+    "access": null,
+    "description": null,
+    "lineNumber": 36,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_hapiServer",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#_hapiServer",
+    "access": null,
+    "description": null,
+    "lineNumber": 37,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "start",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#start",
+    "access": null,
+    "description": "start the server and configure it",
+    "lineNumber": 51,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "stop",
+    "memberof": "lib/server.js~Server",
+    "longname": "lib/server.js~Server#stop",
+    "access": null,
+    "description": "stop the server",
+    "lineNumber": 62,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "server",
+    "memberof": "lib/server.js",
+    "longname": "lib/server.js~server",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/server.js",
+    "importStyle": "server",
+    "description": null,
+    "lineNumber": 70,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/server.js~Server"
+      ]
+    }
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "HapiServer",
+    "externalLink": "http://hapijs.com/api#server",
+    "memberof": "lib/server.js",
+    "longname": "lib/server.js~HapiServer",
+    "access": null,
+    "description": null
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Request",
+    "externalLink": "http://hapijs.com/api#request-object",
+    "memberof": "lib/server.js",
+    "longname": "lib/server.js~Request",
+    "access": null,
+    "description": null
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Reply",
+    "externalLink": "http://hapijs.com/api#reply-interface",
+    "memberof": "lib/server.js",
+    "longname": "lib/server.js~Reply",
+    "access": null,
+    "description": null
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "testFile",
+    "static": true,
+    "variation": null,
+    "name": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js",
+    "memberof": null,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\nimport Server from '../../../lib/server';\nimport config from 'config';\nimport sinon from 'sinon';\nimport Bluebird from 'bluebird';\nimport BucketController from '../../../lib/api_controllers/bucket_controller';\nimport errors from '@hoist/errors';\nimport BucketPipeline from '@hoist/bucket-pipeline';\nimport {\n  expect\n}\nfrom 'chai';\nimport {\n  _mongoose,\n  Organisation,\n  Application\n}\nfrom '@hoist/model';\n\nBluebird.promisifyAll(_mongoose);\n\n/** @test {BucketController} */\ndescribe('Bucket Routes', function () {\n  let server;\n  let application;\n  before(function () {\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((results) => {\n        application = results[0];\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('Sets up correct routes', () => {\n    let mockServer = {\n      route: sinon.stub()\n    };\n    let bucketController;\n    before(() => {\n      bucketController = new BucketController();\n      return bucketController.mapRoutes(mockServer);\n    });\n    it('creates GET /bucket/{key}', () => {\n      return expect(mockServer.route).to.have.been.calledWith({\n        config: {\n          auth: \"hoist\",\n          bind: bucketController\n        },\n        handler: bucketController.getBucket,\n        method: [\"GET\"],\n        path: '/bucket/{key}'\n      });\n    });\n  });\n  describe('GET /bucket/{key}', function () {\n    describe('with matching bucket', function () {\n      var _response;\n      var _bucket = {\n        \"key\": \"MOOSE\",\n        toObject: function () {\n          return {\n            \"key\": \"MOOSE\"\n          };\n        }\n      };\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get', () => {\n          return Promise.resolve(_bucket);\n        });\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/bucket-key',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('returns the bucket JSON', function () {\n        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket.toObject())));\n      });\n      it('sends correct context to pipeline', () => {\n        return expect(BucketPipeline.prototype.get)\n          .to.have.been.calledWith({\n            application: application.toObject(),\n            environment: 'live'\n          }, 'bucket-key');\n      });\n      it('returns 200', function () {\n        expect(_response.statusCode).to.eql(200);\n      });\n    });\n    describe('with no matching bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with no bucket key supplied', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject(new errors.HoistError('TEST')));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n    describe('with non hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject({}));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n  });\n});\n"
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe0",
+    "testId": 0,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js",
+    "testDepth": 0,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0",
+    "access": null,
+    "description": "Bucket Routes",
+    "lineNumber": 23,
+    "unknown": [
+      {
+        "tagName": "@test",
+        "tagValue": "{BucketController}"
+      }
+    ],
+    "testTargets": [
+      "BucketController"
+    ]
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe1",
+    "testId": 1,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe1",
+    "access": null,
+    "description": "Sets up correct routes",
+    "lineNumber": 56
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it2",
+    "testId": 2,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe1",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe1.it2",
+    "access": null,
+    "description": "creates GET /bucket/{key}",
+    "lineNumber": 65
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe3",
+    "testId": 3,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "access": null,
+    "description": "GET /bucket/{key}",
+    "lineNumber": 77
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe4",
+    "testId": 4,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4",
+    "access": null,
+    "description": "with matching bucket",
+    "lineNumber": 78
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it5",
+    "testId": 5,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it5",
+    "access": null,
+    "description": "returns the bucket JSON",
+    "lineNumber": 106
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it6",
+    "testId": 6,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it6",
+    "access": null,
+    "description": "sends correct context to pipeline",
+    "lineNumber": 109
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it7",
+    "testId": 7,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it7",
+    "access": null,
+    "description": "returns 200",
+    "lineNumber": 116
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe8",
+    "testId": 8,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe8",
+    "access": null,
+    "description": "with no matching bucket",
+    "lineNumber": 120
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it9",
+    "testId": 9,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe8",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe8.it9",
+    "access": null,
+    "description": "responds with 404 NOT FOUND",
+    "lineNumber": 138
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe10",
+    "testId": 10,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe10",
+    "access": null,
+    "description": "with no bucket key supplied",
+    "lineNumber": 142
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it11",
+    "testId": 11,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe10",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe10.it11",
+    "access": null,
+    "description": "responds with 404 NOT FOUND",
+    "lineNumber": 160
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe12",
+    "testId": 12,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe12",
+    "access": null,
+    "description": "with hoist err while getting bucket",
+    "lineNumber": 164
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it13",
+    "testId": 13,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe12",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe12.it13",
+    "access": null,
+    "description": "responds with 500",
+    "lineNumber": 182
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe14",
+    "testId": 14,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe14",
+    "access": null,
+    "description": "with non hoist err while getting bucket",
+    "lineNumber": 186
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it15",
+    "testId": 15,
+    "memberof": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe14",
+    "testDepth": 3,
+    "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe14.it15",
+    "access": null,
+    "description": "responds with 500",
+    "lineNumber": 204
+  },
+  {
+    "kind": "testFile",
+    "static": true,
+    "variation": null,
+    "name": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js",
+    "memberof": null,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\nimport sinon from 'sinon';\nimport EventPipeline from '@hoist/events-pipeline';\nimport Server from '../../../../lib/server';\nimport {\n  _mongoose,\n  Event,\n  Application,\n  Organisation\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport {\n  expect\n}\nfrom 'chai';\n\ndescribe('POST /event/{eventName}', function () {\n  let server;\n  let application;\n  before(() => {\n    server = new Server();\n    server._createServer();\n\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((results) => {\n        application = results[0];\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('with matching eventName', function () {\n    var _response;\n    var payload = {\n      key: 'value'\n    };\n    before(function (done) {\n      sinon.stub(EventPipeline.prototype, 'raise', function (context, eventName) {\n        return Promise.resolve(new Event({\n          eventId: 'eventid',\n          applicationId: context.application._id,\n          environment: context.environment,\n          eventName: eventName,\n          payload: payload\n        }));\n      });\n      server._hapiServer.inject({\n        method: 'POST',\n        url: '/event/eventName',\n        headers: {\n          authorization: 'Hoist apiKey',\n          'content-type': 'application/json'\n        },\n        payload: JSON.stringify(payload)\n      }, function (response) {\n        _response = response;\n        done();\n      });\n    });\n    after(function () {\n      EventPipeline.prototype.raise.restore();\n    });\n    it('raises the event', function () {\n      expect(EventPipeline.prototype.raise).to.have.been.calledWith({\n        application: application.toObject(),\n        environment: 'live'\n      }, 'eventName', payload);\n    });\n    it('returns the event', function () {\n      expect(_response.result.payload).to.eql(payload);\n      expect(_response.result.eventName).to.eql('eventName');\n    });\n    it('responds with 201 CREATED', function () {\n      expect(_response.statusCode).to.eql(201);\n    });\n  });\n  describe('with pipeline.raise failing', function () {\n    var _response;\n    var payload = {\n      key: 'value'\n    };\n    before(function (done) {\n      sinon.stub(EventPipeline.prototype, 'raise').returns(Promise.reject());\n      server._hapiServer.inject({\n        method: 'POST',\n        url: '/event/eventName',\n        headers: {\n          authorization: 'Hoist apiKey',\n          'content-type': 'application/json'\n        },\n        payload: JSON.stringify(payload)\n      }, function (response) {\n        response.payload = JSON.parse(response.payload);\n        _response = response;\n        done();\n      });\n    });\n    after(function () {\n      EventPipeline.prototype.raise.restore();\n    });\n    it('responds with a 500', function () {\n      expect(_response.statusCode).to.eql(500);\n    });\n  });\n});\n"
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe16",
+    "testId": 16,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js",
+    "testDepth": 0,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16",
+    "access": null,
+    "description": "POST /event/{eventName}",
+    "lineNumber": 18
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe17",
+    "testId": 17,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17",
+    "access": null,
+    "description": "with matching eventName",
+    "lineNumber": 54
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it18",
+    "testId": 18,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17.it18",
+    "access": null,
+    "description": "raises the event",
+    "lineNumber": 85
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it19",
+    "testId": 19,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17.it19",
+    "access": null,
+    "description": "returns the event",
+    "lineNumber": 91
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it20",
+    "testId": 20,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe17.it20",
+    "access": null,
+    "description": "responds with 201 CREATED",
+    "lineNumber": 95
+  },
+  {
+    "kind": "testDescribe",
+    "static": true,
+    "variation": null,
+    "name": "describe21",
+    "testId": 21,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe21",
+    "access": null,
+    "description": "with pipeline.raise failing",
+    "lineNumber": 99
+  },
+  {
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it22",
+    "testId": 22,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe21",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js~describe16.describe21.it22",
+    "access": null,
+    "description": "responds with a 500",
+    "lineNumber": 123
+  },
+  {
+    "kind": "testFile",
+    "static": true,
+    "variation": null,
+    "name": "tests/unit_tests/api_controller_tests/event_controller_tests.js",
+    "memberof": null,
+    "longname": "tests/unit_tests/api_controller_tests/event_controller_tests.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1098,
+    "content": "/*'use strict';\nvar Server = require('../../../lib/server');\nvar expect = require('chai').expect;\nvar Model = require('hoist-model');\nvar BBPromise = require('bluebird');\nvar mongoose = BBPromise.promisifyAll(Model._mongoose);\nvar config = require('config');\nvar sinon = require('sinon');\nvar pipeline = require('hoist-events-pipeline').Pipeline;\nvar _ = require('lodash');\n\ndescribe('Event Routes', function () {\n\n  var server;\n  before(function () {\n    server = Server.createServer();\n    return BBPromise.all([\n      mongoose.connectAsync(config.get('Hoist.mongo.db')),\n      new Model.Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Model.Application({\n        _id: 'appid',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n    ]);\n  });\n  after(function () {\n    return BBPromise.all([\n      Model.Organisation.removeAsync(),\n      Model.Application.removeAsync()\n    ]).then(function () {\n      return mongoose.disconnectAsync();\n    });\n  });\n  describe('GET /event/{id}', function () {\n    describe('with matching event', function () {\n      var _response;\n      var _event;\n      var clock;\n      before(function (done) {\n        clock = sinon.useFakeTimers();\n        new Model.Event({\n            eventId: 'eventid',\n            applicationId: 'appid',\n            environment: 'live'\n\n          }).saveAsync()\n          .then(function (event) {\n            _event = event;\n            server.inject({\n              method: 'GET',\n              url: '/event/eventid',\n              headers: {\n                authorization: 'Hoist apiKey'\n              }\n            }, function (response) {\n              _response = response;\n              done();\n            });\n          });\n      });\n      after(function () {\n        clock.restore();\n        return Model.Event.removeAsync();\n      });\n      it('returns the event JSON', function () {\n        expect(_response.result).to.eql(_event.toJSON());\n      });\n      it('responds with 200 OK', function () {\n        expect(_response.statusCode).to.eql(200);\n      });\n    });\n    describe('with no matching event', function () {\n\n      var _response;\n      before(function (done) {\n\n        server.inject({\n          method: 'GET',\n          url: '/event/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n\n        });\n      });\n      after(function () {\n        return Model.Event.removeAsync();\n      });\n      it('responds with a 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eql(404);\n      });\n      it('responds with descriptive message', function () {\n        expect(_response.result).to.eql({\n          statusCode: 404,\n          error: 'Not Found',\n          message: 'event not found'\n        });\n      });\n    });\n  });\n\n  describe('GET /events', function () {\n    this.timeout(20000);\n    describe('with no token', function () {\n      describe('with events in timeout', function () {\n\n        var _response;\n        var _event;\n        before(function (done) {\n          setTimeout(function () {\n            new Model.Event({\n              applicationId: 'appid',\n              environment: 'live'\n            }).saveAsync().then(function (event) {\n              _event = event;\n            });\n          }, 1000);\n          server.inject({\n            method: 'GET',\n            url: '/events?&timeoutMS=2000',\n            headers: {\n              authorization: 'Hoist apiKey'\n            }\n          }, function (response) {\n            _response = response;\n            done();\n          });\n        });\n        after(function () {\n          return BBPromise.all([\n            Model.EventToken.removeAsync(),\n            Model.Event.removeAsync()\n          ]);\n        });\n        it('creates a new token', function () {\n          return Model.EventToken.findOneAsync()\n            .then(function (token) {\n              return expect(token).to.exist;\n            });\n        });\n        it('returns an event', function () {\n          var event = _event.toJSON();\n          return expect(_response.result.events).to.eql([event]);\n        });\n        it('returns new token code', function () {\n          return expect(_response.result.token).to.exist;\n        });\n        it('responds with 201 CREATED', function () {\n          return expect(_response.statusCode).to.eql(201);\n        });\n      });\n      describe('with no events in timeout', function () {\n        describe('with valid timeoutMS in query', function () {\n          var _time;\n          var _response;\n          before(function (done) {\n            _time = Date.now();\n            server.inject({\n              method: 'GET',\n              url: '/events?timeoutMS=2000',\n              headers: {\n                authorization: 'Hoist apiKey'\n              }\n            }, function (response) {\n              response.payload = JSON.parse(response.payload);\n              _response = response;\n              done();\n            });\n          });\n          after(function () {\n            return Model.EventToken.removeAsync();\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns no events', function () {\n            return expect(_response.result.events).to.eql([]);\n          });\n          it('returns new token code', function () {\n            return expect(_response.result.token).to.exist;\n          });\n          it('returns after timeout', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                expect(token.lastUsed.getTime()).to.be.least(_time + 2000);\n              });\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with invalid timeoutMS in query', function () {\n          var _time;\n          var _response;\n          before(function (done) {\n            _time = Date.now();\n            server.inject({\n              method: 'GET',\n              url: '/events?timeoutMS=20hgsuf00',\n              headers: {\n                authorization: 'Hoist apiKey'\n              }\n            }, function (response) {\n              response.payload = JSON.parse(response.payload);\n              _response = response;\n              done();\n            });\n          });\n          after(function () {\n            return Model.EventToken.removeAsync();\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns no events', function () {\n            return expect(_response.result.events).to.eql([]);\n          });\n          it('returns new token code', function () {\n            return expect(_response.result.token).to.exist;\n          });\n          it('returns after timeout', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                expect(token.lastUsed.getTime()).to.be.least(_time + 10000);\n              });\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with no timeoutMS in query', function () {\n          var _time;\n          var _response;\n          before(function (done) {\n            _time = Date.now();\n            server.inject({\n              method: 'GET',\n              url: '/events',\n              headers: {\n                authorization: 'Hoist apiKey'\n              }\n            }, function (response) {\n              response.payload = JSON.parse(response.payload);\n              _response = response;\n              done();\n            });\n          });\n          after(function () {\n            return Model.EventToken.removeAsync();\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns no events', function () {\n            return expect(_response.result.events).to.eql([]);\n          });\n          it('returns new token code', function () {\n            return expect(_response.result.token).to.exist;\n          });\n          it('returns after timeout', function () {\n            return Model.EventToken.findOneAsync()\n              .then(function (token) {\n                expect(token.lastUsed.getTime()).to.be.least(_time + 10000);\n              });\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n      });\n    });\n    describe('with an existing token', function () {\n      describe('with events since last use', function () {\n        describe('without filterBy in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  response.payload = JSON.parse(response.payload);\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with filterBy correlationId and no filterValue in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&filterBy=correlationId',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with filterBy correlationId and filterValue in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&filterBy=correlationId&filterValue=eventid',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            events = _.where(events, {\n              correlationId: 'eventid'\n            });\n            return expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            return expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            return expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with filterBy eventName and no filterValue in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&filterBy=correlationId',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  response.payload = JSON.parse(response.payload);\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with filterBy eventName and filterValue in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&filterBy=eventName&filterValue=eventName',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  response.payload = JSON.parse(response.payload);\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            events = _.where(events, {\n              eventName: 'eventName'\n            });\n            expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with invalid filterBy in query', function () {\n\n          var _response;\n          var _events;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function () {\n\n                return Model.Event.createAsync([{\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventId: 'eventid1'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  correlationId: 'eventid',\n                  eventId: 'eventid2'\n                }, {\n                  applicationId: 'appid',\n                  environment: 'live',\n                  eventName: 'eventName',\n                  eventId: 'eventid3'\n                }]);\n              }).then(function (events) {\n                _events = events;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&filterBy=filterBy&filterValue=eventName',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns events stored since last use', function () {\n            var events = _.map(_events, function (event) {\n              var ev = event.toJSON();\n              return ev;\n            });\n            return expect(_response.result.events).to.deep.have.members(events);\n          });\n          it('returns the new token code', function () {\n            return expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('responds with 201 CREATED', function () {\n            return expect(_response.statusCode).to.eql(201);\n          });\n        });\n      });\n      describe('with no events since last use', function () {\n        describe('with events in timeout', function () {\n          var _token;\n          var _response;\n          var _event;\n          before(function (done) {\n            setTimeout(function () {\n              new Model.Event({\n                applicationId: 'appid',\n                environment: 'live'\n              }).saveAsync().then(function (event) {\n                _event = event;\n              });\n            }, 1000);\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function (token) {\n                _token = token;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&timeoutMS=2000',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return BBPromise.all([\n              Model.EventToken.removeAsync(),\n              Model.Event.removeAsync()\n            ]);\n          });\n          it('returns an event', function () {\n            var event = _event.toJSON();\n            expect(_response.result.events).to.eql([event]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('resets token timeout', function () {\n            return Model.EventToken.findOneAsync({\n              code: _response.result.token\n            }).then(function (token) {\n              expect(token.lastUsed).to.be.above(_token.lastUsed);\n            });\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n        describe('with no events in timeout', function () {\n          var _token;\n          var _response;\n          before(function (done) {\n            new Model.EventToken({\n                application: 'appid',\n                environment: 'live',\n                code: 'tokenCode',\n                lastUsed: Date.now()\n              }).saveAsync()\n              .then(function (token) {\n                _token = token;\n                server.inject({\n                  method: 'GET',\n                  url: '/events?token=tokenCode&timeoutMS=2000',\n                  headers: {\n                    authorization: 'Hoist apiKey'\n                  }\n                }, function (response) {\n                  _response = response;\n                  done();\n                });\n              });\n          });\n          after(function () {\n            return Model.EventToken.removeAsync();\n          });\n          it('returns no events', function () {\n            expect(_response.result.events).to.eql([]);\n          });\n          it('creates a new token', function () {\n            return Model.EventToken.findOneAsync({\n                code: {\n                  $ne: 'tokenCode'\n                }\n              })\n              .then(function (token) {\n                return expect(token).to.exist;\n              });\n          });\n          it('returns the new token code', function () {\n            expect(_response.result.token).to.not.eql('tokenCode');\n          });\n          it('returns after timeout', function () {\n            return Model.EventToken.findOneAsync({\n              code: _response.result.token\n            }).then(function (token) {\n              expect(token.lastUsed).to.be.least(_token.lastUsed.getTime() + 2000);\n            });\n          });\n          it('responds with 201 CREATED', function () {\n            expect(_response.statusCode).to.eql(201);\n          });\n        });\n      });\n    });\n    describe('with an expired token', function () {\n      describe('with events in timeout', function () {\n\n        var _response;\n        var _event;\n        before(function (done) {\n          setTimeout(function () {\n            new Model.Event({\n              applicationId: 'appid',\n              environment: 'live'\n            }).saveAsync().then(function (event) {\n              _event = event;\n            });\n          }, 1000);\n          new Model.EventToken({\n              application: 'appid',\n              environment: 'live',\n              code: 'tokenCode',\n              lastUsed: Date.now() - 15 * 60 * 1000\n            }).saveAsync()\n            .then(function () {\n\n              server.inject({\n                method: 'GET',\n                url: '/events?token=tokenCode&timeoutMS=2000',\n                headers: {\n                  authorization: 'Hoist apiKey'\n                }\n              }, function (response) {\n                _response = response;\n                done();\n              });\n            });\n        });\n        after(function () {\n          return BBPromise.all([\n            Model.EventToken.removeAsync(),\n            Model.Event.removeAsync()\n          ]);\n        });\n        it('returns an event', function () {\n          var event = _event.toJSON();\n          expect(_response.result.events).to.eql([event]);\n        });\n        it('creates a new token', function () {\n          return Model.EventToken.findOneAsync({\n              code: {\n                $ne: 'tokenCode'\n              }\n            })\n            .then(function (token) {\n              return expect(token).to.exist;\n            });\n        });\n        it('returns new token code', function () {\n          expect(_response.result.token).to.not.eql('tokenCode');\n        });\n        it('responds with 201 CREATED', function () {\n          expect(_response.statusCode).to.eql(201);\n        });\n      });\n      describe('with no events in timeout', function () {\n        var _time;\n        var _response;\n        before(function (done) {\n          _time = Date.now();\n          new Model.EventToken({\n              application: 'appid',\n              environment: 'live',\n              code: 'tokenCode',\n              lastUsed: Date.now() - 15 * 60 * 1000\n            }).saveAsync()\n            .then(function () {\n\n              server.inject({\n                method: 'GET',\n                url: '/events?token=tokenCode&timeoutMS=2000',\n                headers: {\n                  authorization: 'Hoist apiKey'\n                }\n              }, function (response) {\n                _response = response;\n                done();\n              });\n            });\n        });\n        after(function () {\n          return Model.EventToken.removeAsync();\n        });\n        it('returns no events', function () {\n          expect(_response.result.events).to.eql([]);\n        });\n        it('creates a new token', function () {\n          return Model.EventToken.findOneAsync({\n              code: {\n                $ne: 'tokenCode'\n              }\n            })\n            .then(function (token) {\n              return expect(token).to.exist;\n            });\n        });\n        it('returns new token code', function () {\n          expect(_response.result.token).to.not.eql('tokenCode');\n        });\n        it('returns after timeout', function () {\n          return Model.EventToken.findOneAsync({\n              code: _response.result.token\n            })\n            .then(function (token) {\n              return expect(token.lastUsed.getTime()).to.be.least(_time + 2000);\n            });\n        });\n        it('responds with 201 CREATED', function () {\n          expect(_response.statusCode).to.eql(201);\n        });\n      });\n    });\n    describe('with a non existing token', function () {\n      describe('with events in timeout', function () {\n\n        var _response;\n        var _event;\n        before(function (done) {\n          setTimeout(function () {\n            new Model.Event({\n              applicationId: 'appid',\n              environment: 'live'\n            }).saveAsync().then(function (event) {\n              _event = event;\n            });\n          }, 1000);\n          new Model.EventToken({\n              application: 'appid',\n              environment: 'live',\n              code: 'tokenCode',\n              lastUsed: Date.now() - 15 * 60 * 1000\n            }).saveAsync()\n            .then(function () {\n\n              server.inject({\n                method: 'GET',\n                url: '/events?token=fakeTokenCode&timeoutMS=2000',\n                headers: {\n                  authorization: 'Hoist apiKey'\n                }\n              }, function (response) {\n                _response = response;\n                done();\n              });\n            });\n        });\n        after(function () {\n          return BBPromise.all([\n            Model.EventToken.removeAsync(),\n            Model.Event.removeAsync()\n          ]);\n        });\n        it('returns an event', function () {\n          var event = _event.toJSON();\n          expect(_response.result.events).to.eql([event]);\n        });\n        it('creates a new token', function () {\n          return Model.EventToken.findOneAsync({\n              code: {\n                $ne: 'tokenCode'\n              }\n            })\n            .then(function (token) {\n              return expect(token).to.exist;\n            });\n        });\n        it('returns new token code', function () {\n          expect(_response.result.token).to.not.eql('tokenCode');\n        });\n        it('responds with 201 CREATED', function () {\n          expect(_response.statusCode).to.eql(201);\n        });\n      });\n      describe('with no events in timeout', function () {\n        var _time;\n        var _response;\n        before(function (done) {\n          _time = Date.now();\n          new Model.EventToken({\n              application: 'appid',\n              environment: 'live',\n              code: 'tokenCode',\n              lastUsed: Date.now() - 15 * 60 * 1000\n            }).saveAsync()\n            .then(function () {\n\n              server.inject({\n                method: 'GET',\n                url: '/events?token=fakeTokenCode&timeoutMS=2000',\n                headers: {\n                  authorization: 'Hoist apiKey'\n                }\n              }, function (response) {\n                _response = response;\n                done();\n              });\n            });\n        });\n        after(function () {\n          return Model.EventToken.removeAsync();\n        });\n        it('returns no events', function () {\n          expect(_response.result.events).to.eql([]);\n        });\n        it('creates a new token', function () {\n          return Model.EventToken.findOneAsync({\n              code: {\n                $ne: 'tokenCode'\n              }\n            })\n            .then(function (token) {\n              return expect(token).to.exist;\n            });\n        });\n        it('returns new token code', function () {\n          expect(_response.result.token).to.not.eql('tokenCode');\n        });\n        it('returns after timeout', function () {\n          return Model.EventToken.findOneAsync({\n              code: {\n                $ne: 'tokenCode'\n              }\n            })\n            .then(function (token) {\n              expect(token.lastUsed.getTime()).to.be.least(_time + 2000);\n            });\n        });\n        it('responds with 201 CREATED', function () {\n          expect(_response.statusCode).to.eql(201);\n        });\n      });\n    });\n  });\n});\n*/\n"
+  },
+  {
+    "kind": "testFile",
+    "static": true,
+    "variation": null,
+    "name": "tests/unit_tests/server_tests.js",
+    "memberof": null,
+    "longname": "tests/unit_tests/server_tests.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 82,
+    "content": "/*'use strict';\nvar server = require('../../lib/server');\nvar sinon = require('sinon');\nvar BBPromise = require('bluebird');\nvar Model = require('hoist-model');\nvar mongoose = Model._mongoose;\nvar expect = require('chai').expect;\nvar config = require('config');\nvar router = require('../../lib/router');\n\ndescribe('Server', function () {\n\n  before(function () {\n\n\n  });\n  describe('#start', function () {\n    var hapiServer = {\n      start: sinon.stub().yields()\n    };\n    before(function () {\n      sinon.stub(server, 'createServer').returns(BBPromise.promisifyAll(hapiServer));\n      sinon.stub(mongoose, 'connect').yields();\n      return server.start();\n    });\n    after(function () {\n      server.createServer.restore();\n      mongoose.connect.restore();\n      delete server.server;\n    });\n    it('creates server', function () {\n      return expect(server.createServer).to.have.been.called;\n    });\n    it('starts listening', function () {\n      return expect(hapiServer.start).to.have.been.called;\n    });\n    it('opens mongodb connection', function () {\n      return expect(mongoose.connect).to.have.been.calledWith(config.get('Hoist.mongo.db'));\n    });\n  });\n  describe('#stop', function () {\n    var hapiServer = {\n      stop: sinon.stub().yields()\n    };\n    before(function () {\n      server.server = BBPromise.promisifyAll(hapiServer);\n      sinon.stub(mongoose, 'disconnect').yields();\n      return server.stop();\n    });\n    after(function () {\n      mongoose.disconnect.restore();\n      delete server.server;\n    });\n    it('stops listening', function () {\n      return expect(hapiServer.stop).to.have.been.called;\n    });\n    it('closes mongodb connection', function () {\n      return expect(mongoose.disconnect).to.have.been.called;\n    });\n  });\n  describe('#createServer', function () {\n    var hapiServer;\n    before(function () {\n      sinon.stub(router, 'map');\n      hapiServer = server.createServer();\n    });\n    after(function () {\n      router.map.restore();\n    });\n    it('returns a promisifiedServer', function () {\n      return expect(hapiServer).to.respondTo('startAsync');\n    });\n    it('configures correct port', function () {\n      return expect(hapiServer.info.port).to.eql(8000);\n    });\n    it('maps routes', function () {\n      return expect(router.map).to.have.been.called;\n    });\n  });\n});\n*/\n"
+  }
+]

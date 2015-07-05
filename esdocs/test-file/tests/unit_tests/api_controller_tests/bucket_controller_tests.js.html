@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">tests/unit_tests/api_controller_tests/bucket_controller_tests.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+</head>
+<body class="layout-container">
+
+<header>
+  <a href="./">Home</a>
+  <a href="identifiers.html">Identifier</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <a data-ice="repoURL" href="https://github.com/hoist/hoist-http-host.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div data-ice="classWrap">
+  <h2>Class</h2>
+  <ul>
+    
+  <li data-ice="classDoc"><span><a href="class/lib/api_controllers/bucket_controller.js~BucketController.html">BucketController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/api_controllers/event_controller.js~EventController.html">EventController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/authentication/hoist_plugin.js~HoistAuthentication.html">HoistAuthentication</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/router.js~Router.html">Router</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/server.js~Server.html">Server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="functionWrap">
+  <h2><a href="function/">Function</a></h2>
+  <ul>
+    
+  <li data-ice="functionDoc"><span><a href="function/index.html#static-function-register">register</a></span></li>
+</ul>
+</div>
+
+<div data-ice="variableWrap">
+  <h2><a href="variable/">Variable</a></h2>
+  <ul>
+    
+  <li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-bucketController">bucketController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-eventController">eventController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-hoistAuthentication">hoistAuthentication</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-router">router</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-server">server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="externalWrap">
+  <h2>External</h2>
+  <ul>
+    
+  <li data-ice="externalDoc"><span><a href="http://hapijs.com/api#server">HapiServer</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#reply-interface">Reply</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#request-object">Request</a></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">tests/unit_tests/api_controller_tests/bucket_controller_tests.js</h1>
+<pre class="source-code line-number"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+import Server from &apos;../../../lib/server&apos;;
+import config from &apos;config&apos;;
+import sinon from &apos;sinon&apos;;
+import Bluebird from &apos;bluebird&apos;;
+import BucketController from &apos;../../../lib/api_controllers/bucket_controller&apos;;
+import errors from &apos;@hoist/errors&apos;;
+import BucketPipeline from &apos;@hoist/bucket-pipeline&apos;;
+import {
+  expect
+}
+from &apos;chai&apos;;
+import {
+  _mongoose,
+  Organisation,
+  Application
+}
+from &apos;@hoist/model&apos;;
+
+Bluebird.promisifyAll(_mongoose);
+
+/** @test {BucketController} */
+describe(&apos;Bucket Routes&apos;, function () {
+  let server;
+  let application;
+  before(function () {
+    server = new Server();
+    server._createServer();
+    return Promise.all([
+      _mongoose.connectAsync(config.get(&apos;Hoist.mongo.core.connectionString&apos;)),
+      new Organisation({
+        _id: &apos;orgid&apos;,
+        name: &apos;test org&apos;,
+        slug: &apos;org&apos;
+      }).saveAsync(),
+      new Application({
+        _id: &apos;appid2&apos;,
+        organisation: &apos;orgid&apos;,
+        name: &apos;test app&apos;,
+        apiKey: &apos;apiKey&apos;,
+        slug: &apos;app&apos;
+      }).saveAsync()
+      .then((results) =&gt; {
+        application = results[0];
+      })
+    ]);
+  });
+  after(function () {
+    return Promise.all([
+      Organisation.removeAsync(),
+      Application.removeAsync()
+    ]).then(function () {
+      return _mongoose.disconnectAsync();
+    });
+  });
+  describe(&apos;Sets up correct routes&apos;, () =&gt; {
+    let mockServer = {
+      route: sinon.stub()
+    };
+    let bucketController;
+    before(() =&gt; {
+      bucketController = new BucketController();
+      return bucketController.mapRoutes(mockServer);
+    });
+    it(&apos;creates GET /bucket/{key}&apos;, () =&gt; {
+      return expect(mockServer.route).to.have.been.calledWith({
+        config: {
+          auth: &quot;hoist&quot;,
+          bind: bucketController
+        },
+        handler: bucketController.getBucket,
+        method: [&quot;GET&quot;],
+        path: &apos;/bucket/{key}&apos;
+      });
+    });
+  });
+  describe(&apos;GET /bucket/{key}&apos;, function () {
+    describe(&apos;with matching bucket&apos;, function () {
+      var _response;
+      var _bucket = {
+        &quot;key&quot;: &quot;MOOSE&quot;,
+        toObject: function () {
+          return {
+            &quot;key&quot;: &quot;MOOSE&quot;
+          };
+        }
+      };
+      before(function (done) {
+        sinon.stub(BucketPipeline.prototype, &apos;get&apos;, () =&gt; {
+          return Promise.resolve(_bucket);
+        });
+        server._hapiServer.inject({
+          method: &apos;GET&apos;,
+          url: &apos;/bucket/bucket-key&apos;,
+          headers: {
+            authorization: &apos;Hoist apiKey&apos;
+          }
+        }, function (response) {
+          _response = response;
+          done();
+        });
+      });
+      after(function () {
+        BucketPipeline.prototype.get.restore();
+      });
+      it(&apos;returns the bucket JSON&apos;, function () {
+        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket.toObject())));
+      });
+      it(&apos;sends correct context to pipeline&apos;, () =&gt; {
+        return expect(BucketPipeline.prototype.get)
+          .to.have.been.calledWith({
+            application: application.toObject(),
+            environment: &apos;live&apos;
+          }, &apos;bucket-key&apos;);
+      });
+      it(&apos;returns 200&apos;, function () {
+        expect(_response.statusCode).to.eql(200);
+      });
+    });
+    describe(&apos;with no matching bucket&apos;, function () {
+      var _response;
+      before(function (done) {
+        sinon.stub(BucketPipeline.prototype, &apos;get&apos;).returns(Promise.resolve(null));
+        server._hapiServer.inject({
+          method: &apos;GET&apos;,
+          url: &apos;/bucket/eventid&apos;,
+          headers: {
+            authorization: &apos;Hoist apiKey&apos;
+          }
+        }, function (response) {
+          _response = response;
+          done();
+        });
+      });
+      after(function () {
+        BucketPipeline.prototype.get.restore();
+      });
+      it(&apos;responds with 404 NOT FOUND&apos;, function () {
+        expect(_response.statusCode).to.eq(404);
+      });
+    });
+    describe(&apos;with no bucket key supplied&apos;, function () {
+      var _response;
+      before(function (done) {
+        sinon.stub(BucketPipeline.prototype, &apos;get&apos;).returns(Promise.resolve(null));
+        server._hapiServer.inject({
+          method: &apos;GET&apos;,
+          url: &apos;/bucket/&apos;,
+          headers: {
+            authorization: &apos;Hoist apiKey&apos;
+          }
+        }, function (response) {
+          _response = response;
+          done();
+        });
+      });
+      after(function () {
+        BucketPipeline.prototype.get.restore();
+      });
+      it(&apos;responds with 404 NOT FOUND&apos;, function () {
+        expect(_response.statusCode).to.eq(404);
+      });
+    });
+    describe(&apos;with hoist err while getting bucket&apos;, function () {
+      var _response;
+      before(function (done) {
+        sinon.stub(BucketPipeline.prototype, &apos;get&apos;).returns(Promise.reject(new errors.HoistError(&apos;TEST&apos;)));
+        server._hapiServer.inject({
+          method: &apos;GET&apos;,
+          url: &apos;/bucket/eventid&apos;,
+          headers: {
+            authorization: &apos;Hoist apiKey&apos;
+          }
+        }, function (response) {
+          _response = response;
+          done();
+        });
+      });
+      after(function () {
+        BucketPipeline.prototype.get.restore();
+      });
+      it(&apos;responds with 500&apos;, function () {
+        expect(_response.statusCode).to.eq(500);
+      });
+    });
+    describe(&apos;with non hoist err while getting bucket&apos;, function () {
+      var _response;
+      before(function (done) {
+        sinon.stub(BucketPipeline.prototype, &apos;get&apos;).returns(Promise.reject({}));
+        server._hapiServer.inject({
+          method: &apos;GET&apos;,
+          url: &apos;/bucket/eventid&apos;,
+          headers: {
+            authorization: &apos;Hoist apiKey&apos;
+          }
+        }, function (response) {
+          _response = response;
+          done();
+        });
+      });
+      after(function () {
+        BucketPipeline.prototype.get.restore();
+      });
+      it(&apos;responds with 500&apos;, function () {
+        expect(_response.statusCode).to.eq(500);
+      });
+    });
+  });
+});
+</code></pre>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.1.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
