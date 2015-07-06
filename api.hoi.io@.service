@@ -1,0 +1,17 @@
+[Unit]
+Description=api.hoi.io service
+After=config.service
+
+[Service]
+User=core
+Restart=always
+ExecStartPre=-/usr/bin/docker kill api.hoi.io-%i
+ExecStartPre=-/usr/bin/docker rm api.hoi.io-%i
+ExecStartPre=-/usr/bin/docker pull quay.io/hoist/api.hoi.io:docker
+ExecStart=/usr/bin/docker run --name api.hoi.io-%i  -e "SERVICE_TAGS=http,nodejs,api.hoi.io,production,https-hoi-io" -e "SERVICE_NAME=api" -e "NODE_ENV=production" --volumes-from config -P quay.io/hoist/api.hoi.io:docker
+ExecStop=/usr/bin/docker stop api.hoi.io-%i
+TimeoutStartSec=30m
+
+[X-Fleet]
+Conflicts=api.hoi.io@*.service
+MachineMetadata=container_type=web

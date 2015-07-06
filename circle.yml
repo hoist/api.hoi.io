@@ -19,22 +19,22 @@ dependencies:
     - "~/docker"
   override:
     - mkdir -p ~/docker
-    - if [[ -e ~/docker/api.tar ]]; then docker load -i ~/docker/api.tar; fi
-    - docker build -t quay.io/hoist/api:${CIRCLE_BRANCH//feature\//} .
-    - docker save "quay.io/hoist/api" > ~/docker/api.tar
+    - if [[ -e ~/docker/api.hoi.io.tar ]]; then docker load -i ~/docker/api.hoi.io.tar; fi
+    - docker build -t quay.io/hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//} .
+    - docker save "quay.io/hoist/api.hoi.io" > ~/docker/api.hoi.io.tar
 test:
   override:
     - docker kill mongodb; true;
     - docker rm mongodb; true;
     - docker kill rabbitmq; true;
     - docker rm rabbitmq; true;
-    - docker kill api-test; true;
-    - docker rm api-test; true;
+    - docker kill api.hoi.io-test; true;
+    - docker rm api.hoi.io-test; true;
     - docker run -d --name mongodb mongo
     - docker run -d -e RABBITMQ_NODENAME=rabbitmq --name rabbitmq rabbitmq:3-management
-    - docker run -t --link mongodb:db --link rabbitmq:rabbitmq --name api-test --entrypoint gulp quay.io/hoist/api:${CIRCLE_BRANCH//feature\//} test
+    - docker run -t --link mongodb:db --link rabbitmq:rabbitmq --name api.hoi.io-test --entrypoint gulp quay.io/hoist/api:${CIRCLE_BRANCH//feature\//} test
   post:
-    - docker cp api-test:/usr/src/app/coverage ~/
+    - docker cp api.hoi.io-test:/usr/src/app/coverage ~/
 general:
   artifacts:
     - ~/coverage/*
@@ -48,7 +48,7 @@ deployment:
     commands:
       - echo ${DOCKER_CONFIG} > .dockercfg
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
-      - docker push quay.io/hoist/api:${CIRCLE_BRANCH//feature\//}
+      - docker push quay.io/hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//}
 notify:
   webhooks:
     - url: https://overlord.hoist.io/api/webhook/circleci?api_token=xc1zrzacmxp9samlj9nya4gzay
