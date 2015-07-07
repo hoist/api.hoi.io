@@ -44,3 +44,4 @@ coverage/*
 log/*
 config/runtime.json
 .queues
+.npmrc
