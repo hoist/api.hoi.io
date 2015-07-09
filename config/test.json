@@ -1,9 +1,1 @@
-{
-  "Hoist": {
-    "mongo": {
-      "core": {
-        "connectionString": "mongodb://db/hoist-test"
-      }
-    }
-  }
-}
+{}

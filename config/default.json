@@ -11,7 +11,7 @@
     },
     "rabbit": {
       "url": "amqp://rabbitmq",
-      "managementUrl": "http://guest:guest@rabbitmq:15672/"
+      "managementurl": "http://guest:guest@rabbitmq:15672/"
     }
 
   }

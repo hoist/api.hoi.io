@@ -137,8 +137,9 @@ class Server {
    * stop the server
    */
   stop() {
+
     return this._hapiServer.stopAsync()
-      .then(function () {
+      .then(() =&gt; {
         return _mongoose.disconnectAsync();
       });
   }

@@ -21,9 +21,6 @@ describe('POST /event/{eventName}', function () {
   before(() => {
     server = new Server();
     server._createServer();
-
-    server = new Server();
-    server._createServer();
     return Promise.all([
       _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),
       new Organisation({

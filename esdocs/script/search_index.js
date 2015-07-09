@@ -487,43 +487,133 @@ window.esdocSearchIndex = [
   ],
   [
     "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber18",
+    "GET /events",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber128",
+    "GET /events on call with a token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber213",
+    "GET /events on call with a token polls for any messages in the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber219",
+    "GET /events on call with a token removes messages from the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber216",
+    "GET /events on call with a token returns the token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber229",
+    "GET /events on call with expired token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber281",
+    "GET /events on call with expired token returns a token",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber272",
+    "GET /events on call with expired token sets up a new queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber51",
+    "GET /events on initial call",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber113",
+    "GET /events on initial call links the queue to the correct event exchange",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber102",
+    "GET /events on initial call links the token to a rabbit queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber99",
+    "GET /events on initial call responds with 200|OK",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber96",
+    "GET /events on initial call returns new token code",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber105",
+    "GET /events on initial call saves a token to the db",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber124",
+    "GET /events on initial call sets expiry on the queue",
+    "test"
+  ],
+  [
+    "",
     "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber18",
     "POST /event/{eventName}",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber54",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber51",
     "POST /event/{eventName} with matching eventName",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber85",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber82",
     "POST /event/{eventName} with matching eventName raises the event",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber95",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber92",
     "POST /event/{eventName} with matching eventName responds with 201 CREATED",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber91",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber88",
     "POST /event/{eventName} with matching eventName returns the event",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber99",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber96",
     "POST /event/{eventName} with pipeline.raise failing",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber123",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html#lineNumber120",
     "POST /event/{eventName} with pipeline.raise failing responds with a 500",
     "test"
   ],
@@ -675,6 +765,12 @@ window.esdocSearchIndex = [
     "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js",
     "test-file/tests/unit_tests/api_controller_tests/event_api/post_event_tests.js.html",
     "tests/unit_tests/api_controller_tests/event_api/post_event_tests.js",
+    "testFile"
+  ],
+  [
+    "tests/unit_tests/api_controller_tests/event_api/stream_tests.js",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html",
+    "tests/unit_tests/api_controller_tests/event_api/stream_tests.js",
     "testFile"
   ],
   [

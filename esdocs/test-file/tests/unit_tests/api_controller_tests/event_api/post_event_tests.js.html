@@ -98,9 +98,6 @@ describe(&apos;POST /event/{eventName}&apos;, function () {
   before(() =&gt; {
     server = new Server();
     server._createServer();
-
-    server = new Server();
-    server._createServer();
     return Promise.all([
       _mongoose.connectAsync(config.get(&apos;Hoist.mongo.core.connectionString&apos;)),
       new Organisation({

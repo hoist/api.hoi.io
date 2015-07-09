@@ -90,10 +90,10 @@ class Router {
    * @param {HapiServer} server
    */
   map(server) {
-    let eventController = new EventController();
-    eventController.mapRoutes(server);
-    let bucketController = new BucketController();
-    bucketController.mapRoutes(server);
+    this._eventController = new EventController();
+    this._bucketController = new BucketController();
+    this._eventController.mapRoutes(server);
+    this._bucketController.mapRoutes(server);
     server.route({
       method: &apos;GET&apos;,
       path: &apos;/&apos;,
