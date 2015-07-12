@@ -79,13 +79,13 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber164",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber159",
     "Bucket Routes GET /bucket/{key} with hoist err while getting bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber182",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber177",
     "Bucket Routes GET /bucket/{key} with hoist err while getting bucket responds with 500",
     "test"
   ],
@@ -97,55 +97,55 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber116",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber111",
     "Bucket Routes GET /bucket/{key} with matching bucket returns 200",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber106",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber101",
     "Bucket Routes GET /bucket/{key} with matching bucket returns the bucket JSON",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber109",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber104",
     "Bucket Routes GET /bucket/{key} with matching bucket sends correct context to pipeline",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber142",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber137",
     "Bucket Routes GET /bucket/{key} with no bucket key supplied",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber160",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber155",
     "Bucket Routes GET /bucket/{key} with no bucket key supplied responds with 404 NOT FOUND",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber120",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber115",
     "Bucket Routes GET /bucket/{key} with no matching bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber138",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber133",
     "Bucket Routes GET /bucket/{key} with no matching bucket responds with 404 NOT FOUND",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber186",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber181",
     "Bucket Routes GET /bucket/{key} with non hoist err while getting bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber204",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber199",
     "Bucket Routes GET /bucket/{key} with non hoist err while getting bucket responds with 500",
     "test"
   ],

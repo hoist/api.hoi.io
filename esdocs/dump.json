@@ -1699,7 +1699,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "'use strict';\nimport Server from '../../../lib/server';\nimport config from 'config';\nimport sinon from 'sinon';\nimport Bluebird from 'bluebird';\nimport BucketController from '../../../lib/api_controllers/bucket_controller';\nimport errors from '@hoist/errors';\nimport BucketPipeline from '@hoist/bucket-pipeline';\nimport {\n  expect\n}\nfrom 'chai';\nimport {\n  _mongoose,\n  Organisation,\n  Application\n}\nfrom '@hoist/model';\n\nBluebird.promisifyAll(_mongoose);\n\n/** @test {BucketController} */\ndescribe('Bucket Routes', function () {\n  let server;\n  let application;\n  before(function () {\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((results) => {\n        application = results[0];\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('Sets up correct routes', () => {\n    let mockServer = {\n      route: sinon.stub()\n    };\n    let bucketController;\n    before(() => {\n      bucketController = new BucketController();\n      return bucketController.mapRoutes(mockServer);\n    });\n    it('creates GET /bucket/{key}', () => {\n      return expect(mockServer.route).to.have.been.calledWith({\n        config: {\n          auth: \"hoist\",\n          bind: bucketController\n        },\n        handler: bucketController.getBucket,\n        method: [\"GET\"],\n        path: '/bucket/{key}'\n      });\n    });\n  });\n  describe('GET /bucket/{key}', function () {\n    describe('with matching bucket', function () {\n      var _response;\n      var _bucket = {\n        \"key\": \"MOOSE\",\n        toObject: function () {\n          return {\n            \"key\": \"MOOSE\"\n          };\n        }\n      };\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get', () => {\n          return Promise.resolve(_bucket);\n        });\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/bucket-key',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('returns the bucket JSON', function () {\n        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket.toObject())));\n      });\n      it('sends correct context to pipeline', () => {\n        return expect(BucketPipeline.prototype.get)\n          .to.have.been.calledWith({\n            application: application.toObject(),\n            environment: 'live'\n          }, 'bucket-key');\n      });\n      it('returns 200', function () {\n        expect(_response.statusCode).to.eql(200);\n      });\n    });\n    describe('with no matching bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with no bucket key supplied', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject(new errors.HoistError('TEST')));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n    describe('with non hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject({}));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n  });\n});\n"
+    "content": "'use strict';\nimport Server from '../../../lib/server';\nimport config from 'config';\nimport sinon from 'sinon';\nimport Bluebird from 'bluebird';\nimport BucketController from '../../../lib/api_controllers/bucket_controller';\nimport errors from '@hoist/errors';\nimport BucketPipeline from '@hoist/bucket-pipeline';\nimport {\n  expect\n}\nfrom 'chai';\nimport {\n  _mongoose,\n  Organisation,\n  Application\n}\nfrom '@hoist/model';\n\nBluebird.promisifyAll(_mongoose);\n\n/** @test {BucketController} */\ndescribe('Bucket Routes', function () {\n  let server;\n  let application;\n  before(function () {\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((results) => {\n        application = results[0];\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('Sets up correct routes', () => {\n    let mockServer = {\n      route: sinon.stub()\n    };\n    let bucketController;\n    before(() => {\n      bucketController = new BucketController();\n      return bucketController.mapRoutes(mockServer);\n    });\n    it('creates GET /bucket/{key}', () => {\n      return expect(mockServer.route).to.have.been.calledWith({\n        config: {\n          auth: \"hoist\",\n          bind: bucketController\n        },\n        handler: bucketController.getBucket,\n        method: [\"GET\"],\n        path: '/bucket/{key}'\n      });\n    });\n  });\n  describe('GET /bucket/{key}', function () {\n    describe('with matching bucket', function () {\n      var _response;\n      var _bucket = {\n        \"key\": \"MOOSE\"\n      };\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get', () => {\n          return Promise.resolve(_bucket);\n        });\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/bucket-key',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('returns the bucket JSON', function () {\n        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket)));\n      });\n      it('sends correct context to pipeline', () => {\n        return expect(BucketPipeline.prototype.get)\n          .to.have.been.calledWith({\n            application: application.toObject(),\n            environment: 'live'\n          }, 'bucket-key');\n      });\n      it('returns 200', function () {\n        expect(_response.statusCode).to.eql(200);\n      });\n    });\n    describe('with no matching bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with no bucket key supplied', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 404 NOT FOUND', function () {\n        expect(_response.statusCode).to.eq(404);\n      });\n    });\n    describe('with hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject(new errors.HoistError('TEST')));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n    describe('with non hoist err while getting bucket', function () {\n      var _response;\n      before(function (done) {\n        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject({}));\n        server._hapiServer.inject({\n          method: 'GET',\n          url: '/bucket/eventid',\n          headers: {\n            authorization: 'Hoist apiKey'\n          }\n        }, function (response) {\n          _response = response;\n          done();\n        });\n      });\n      after(function () {\n        BucketPipeline.prototype.get.restore();\n      });\n      it('responds with 500', function () {\n        expect(_response.statusCode).to.eq(500);\n      });\n    });\n  });\n});\n"
   },
   {
     "kind": "testDescribe",
@@ -1786,7 +1786,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it5",
     "access": null,
     "description": "returns the bucket JSON",
-    "lineNumber": 106
+    "lineNumber": 101
   },
   {
     "kind": "testIt",
@@ -1799,7 +1799,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it6",
     "access": null,
     "description": "sends correct context to pipeline",
-    "lineNumber": 109
+    "lineNumber": 104
   },
   {
     "kind": "testIt",
@@ -1812,7 +1812,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe4.it7",
     "access": null,
     "description": "returns 200",
-    "lineNumber": 116
+    "lineNumber": 111
   },
   {
     "kind": "testDescribe",
@@ -1825,7 +1825,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe8",
     "access": null,
     "description": "with no matching bucket",
-    "lineNumber": 120
+    "lineNumber": 115
   },
   {
     "kind": "testIt",
@@ -1838,7 +1838,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe8.it9",
     "access": null,
     "description": "responds with 404 NOT FOUND",
-    "lineNumber": 138
+    "lineNumber": 133
   },
   {
     "kind": "testDescribe",
@@ -1851,7 +1851,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe10",
     "access": null,
     "description": "with no bucket key supplied",
-    "lineNumber": 142
+    "lineNumber": 137
   },
   {
     "kind": "testIt",
@@ -1864,7 +1864,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe10.it11",
     "access": null,
     "description": "responds with 404 NOT FOUND",
-    "lineNumber": 160
+    "lineNumber": 155
   },
   {
     "kind": "testDescribe",
@@ -1877,7 +1877,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe12",
     "access": null,
     "description": "with hoist err while getting bucket",
-    "lineNumber": 164
+    "lineNumber": 159
   },
   {
     "kind": "testIt",
@@ -1890,7 +1890,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe12.it13",
     "access": null,
     "description": "responds with 500",
-    "lineNumber": 182
+    "lineNumber": 177
   },
   {
     "kind": "testDescribe",
@@ -1903,7 +1903,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe14",
     "access": null,
     "description": "with non hoist err while getting bucket",
-    "lineNumber": 186
+    "lineNumber": 181
   },
   {
     "kind": "testIt",
@@ -1916,7 +1916,7 @@
     "longname": "tests/unit_tests/api_controller_tests/bucket_controller_tests.js~describe0.describe3.describe14.it15",
     "access": null,
     "description": "responds with 500",
-    "lineNumber": 204
+    "lineNumber": 199
   },
   {
     "kind": "testFile",

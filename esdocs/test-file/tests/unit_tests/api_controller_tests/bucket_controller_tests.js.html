@@ -155,12 +155,7 @@ describe(&apos;Bucket Routes&apos;, function () {
     describe(&apos;with matching bucket&apos;, function () {
       var _response;
       var _bucket = {
-        &quot;key&quot;: &quot;MOOSE&quot;,
-        toObject: function () {
-          return {
-            &quot;key&quot;: &quot;MOOSE&quot;
-          };
-        }
+        &quot;key&quot;: &quot;MOOSE&quot;
       };
       before(function (done) {
         sinon.stub(BucketPipeline.prototype, &apos;get&apos;, () =&gt; {
@@ -181,7 +176,7 @@ describe(&apos;Bucket Routes&apos;, function () {
         BucketPipeline.prototype.get.restore();
       });
       it(&apos;returns the bucket JSON&apos;, function () {
-        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket.toObject())));
+        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket)));
       });
       it(&apos;sends correct context to pipeline&apos;, () =&gt; {
         return expect(BucketPipeline.prototype.get)
