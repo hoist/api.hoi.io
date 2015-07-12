@@ -116,7 +116,7 @@ class BucketController {
         throw new errors.Http404Error(&apos;bucket not found @ &apos; + req.params.key);
       }
       this._logger.info(&apos;found bucket&apos;);
-      reply(bucket.toObject());
+      reply(bucket);
     }).catch((err) =&gt; {
       this._logger.error(err);
       if (!errors.isHoistError(err)) {
