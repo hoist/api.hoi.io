@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../../">
+  <title data-ice="title">tests/unit_tests/api_controller_tests/event_api/stream_tests.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+</head>
+<body class="layout-container">
+
+<header>
+  <a href="./">Home</a>
+  <a href="identifiers.html">Identifier</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <a data-ice="repoURL" href="https://github.com/hoist/hoist-http-host.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div data-ice="classWrap">
+  <h2>Class</h2>
+  <ul>
+    
+  <li data-ice="classDoc"><span><a href="class/lib/api_controllers/bucket_controller.js~BucketController.html">BucketController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/api_controllers/event_controller.js~EventController.html">EventController</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/authentication/hoist_plugin.js~HoistAuthentication.html">HoistAuthentication</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/router.js~Router.html">Router</a></span></li>
+<li data-ice="classDoc"><span><a href="class/lib/server.js~Server.html">Server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="functionWrap">
+  <h2><a href="function/">Function</a></h2>
+  <ul>
+    
+  <li data-ice="functionDoc"><span><a href="function/index.html#static-function-register">register</a></span></li>
+</ul>
+</div>
+
+<div data-ice="variableWrap">
+  <h2><a href="variable/">Variable</a></h2>
+  <ul>
+    
+  <li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-bucketController">bucketController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-eventController">eventController</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-hoistAuthentication">hoistAuthentication</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-router">router</a></span></li>
+<li data-ice="variableDoc"><span><a href="variable/index.html#static-variable-server">server</a></span></li>
+</ul>
+</div>
+
+
+
+<div data-ice="externalWrap">
+  <h2>External</h2>
+  <ul>
+    
+  <li data-ice="externalDoc"><span><a href="http://hapijs.com/api#server">HapiServer</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#reply-interface">Reply</a></span></li>
+<li data-ice="externalDoc"><span><a href="http://hapijs.com/api#request-object">Request</a></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">tests/unit_tests/api_controller_tests/event_api/stream_tests.js</h1>
+<pre class="source-code line-number"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+import Server from &apos;../../../../lib/server&apos;;
+import {
+  _mongoose,
+  Application,
+  Organisation,
+  EventToken
+}
+from &apos;@hoist/model&apos;;
+import config from &apos;config&apos;;
+import request from &apos;request-promise&apos;;
+import {
+  expect
+}
+from &apos;chai&apos;;
+
+let baseRabbitManagementUri = `${config.get(&apos;Hoist.rabbit.managementurl&apos;)}api/`;
+describe(&apos;GET /events&apos;, function () {
+  let server;
+  let application;
+  before(() =&gt; {
+    server = new Server();
+    server._createServer();
+    return Promise.all([
+      _mongoose.connectAsync(config.get(&apos;Hoist.mongo.core.connectionString&apos;)),
+      new Organisation({
+        _id: &apos;orgid&apos;,
+        name: &apos;test org&apos;,
+        slug: &apos;org&apos;
+      }).saveAsync(),
+      new Application({
+        _id: &apos;appid2&apos;,
+        organisation: &apos;orgid&apos;,
+        name: &apos;test app&apos;,
+        apiKey: &apos;apiKey&apos;,
+        slug: &apos;app&apos;
+      }).saveAsync()
+      .then((results) =&gt; {
+        application = results[0];
+      })
+    ]);
+  });
+  after(function () {
+    return Promise.all([
+      Organisation.removeAsync(),
+      Application.removeAsync()
+    ]).then(function () {
+      return _mongoose.disconnectAsync();
+    });
+  });
+  describe(&apos;on initial call&apos;, function () {
+    this.timeout(5000);
+    let _response;
+    let queueDetails;
+    let exchangeUri = `${baseRabbitManagementUri}exchanges/${encodeURIComponent(&apos;/&apos;)}/hoist`;
+    let queueUri;
+    before((done) =&gt; {
+      //clock = sinon.useFakeTimers();
+      server._hapiServer.inject({
+        method: &apos;GET&apos;,
+        url: &apos;/events?timeoutMS=10&apos;,
+        headers: {
+          authorization: &apos;Hoist apiKey&apos;,
+          &apos;content-type&apos;: &apos;application/json&apos;
+        }
+      }, (response) =&gt; {
+        _response = response;
+        queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent(&apos;/&apos;)}/${encodeURIComponent(_response.result.token)}_stream`;
+        request({
+          method: &apos;GET&apos;,
+          uri: queueUri,
+          json: true
+        }).then((queueResponse) =&gt; {
+          queueDetails = queueResponse;
+          done();
+        }).catch((err) =&gt; {
+          done(err);
+        });
+      });
+    });
+    after(() =&gt; {
+      return Promise.all([
+        request({
+          method: &apos;DELETE&apos;,
+          uri: exchangeUri,
+          json: true
+        }),
+        request({
+          method: &apos;DELETE&apos;,
+          uri: queueUri,
+          json: true
+        }),
+        EventToken.removeAsync({})
+      ]);
+    });
+    it(&apos;returns new token code&apos;, () =&gt; {
+      return expect(_response.result.token).to.exist;
+    });
+    it(&apos;responds with 200|OK&apos;, () =&gt; {
+      return expect(_response.statusCode).to.eql(200);
+    });
+    it(&apos;links the token to a rabbit queue&apos;, () =&gt; {
+      return expect(queueDetails).to.exist;
+    });
+    it(&apos;saves a token to the db&apos;, () =&gt; {
+      return EventToken.findOneAsync({
+        code: _response.result.token
+      }).then((eventToken) =&gt; {
+        return expect(eventToken.application).to.eql(application._id) &amp;&amp;
+          expect(eventToken.environment).to.eql(&apos;live&apos;);
+      });
+    });
+    it(&apos;links the queue to the correct event exchange&apos;, () =&gt; {
+      return request({
+        method: &apos;GET&apos;,
+        uri: `${exchangeUri}/bindings/source`,
+        json: true
+      }).then((boundQueues) =&gt; {
+        return expect(boundQueues.length).to.eql(1) &amp;&amp;
+          expect(boundQueues[0].destination).to.eql(`${_response.result.token}_stream`) &amp;&amp;
+          expect(boundQueues[0].routing_key).to.eql(`event.${application._id}.*.*`);
+      });
+    });
+    it(&apos;sets expiry on the queue&apos;, () =&gt; {
+      return expect(queueDetails.arguments[&apos;x-expires&apos;]).to.eql(3600000);
+    });
+  });
+  describe(&apos;on call with a token&apos;, function () {
+    this.timeout(10000);
+    let eventToken;
+    let queueUri;
+    let event1 = {
+      name: &apos;event1&apos;
+    };
+    let event2 = {
+      name: &apos;event2&apos;
+    };
+    let _response;
+    before((done) =&gt; {
+      eventToken = new EventToken({
+        application: application._id,
+        environment: &apos;live&apos;
+      });
+
+      return eventToken.saveAsync()
+        .then(() =&gt; {
+          queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent(&apos;/&apos;)}/${encodeURIComponent(eventToken.code)}_stream`;
+          console.log(queueUri);
+          return request({
+            method: &apos;PUT&apos;,
+            uri: queueUri,
+            json: true,
+            body: {
+              &quot;auto_delete&quot;: false,
+              &quot;durable&quot;: true,
+              &quot;arguments&quot;: {
+                &apos;x-expires&apos;: 10000
+              }
+            }
+          }).catch((err) =&gt; {
+            console.log(err);
+          });
+        }).then(() =&gt; {
+          return Promise.all([
+            request({
+              method: &apos;POST&apos;,
+              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent(&apos;/&apos;)}/amq.default/publish`,
+              json: true,
+              body: {
+                &quot;properties&quot;: {},
+                &quot;routing_key&quot;: `${eventToken.code}_stream`,
+                &quot;payload&quot;: JSON.stringify(event1),
+                &quot;payload_encoding&quot;: &quot;string&quot;
+              }
+            }),
+            request({
+              method: &apos;POST&apos;,
+              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent(&apos;/&apos;)}/amq.default/publish`,
+              json: true,
+              body: {
+                &quot;properties&quot;: {},
+                &quot;routing_key&quot;: `${eventToken.code}_stream`,
+                &quot;payload&quot;: JSON.stringify(event2),
+                &quot;payload_encoding&quot;: &quot;string&quot;
+              }
+            })
+          ]);
+        }).then(() =&gt; {
+          server._hapiServer.inject({
+            method: &apos;GET&apos;,
+            url: `/events?token=${encodeURIComponent(eventToken.code)}`,
+            headers: {
+              authorization: &apos;Hoist apiKey&apos;,
+              &apos;content-type&apos;: &apos;application/json&apos;
+            }
+          }, (response) =&gt; {
+            _response = response;
+            done();
+          });
+        });
+
+    });
+    after(() =&gt; {
+      return Promise.all([
+        request({
+          method: &apos;DELETE&apos;,
+          uri: queueUri,
+          json: true
+        }),
+        EventToken.removeAsync({})
+      ]);
+    });
+    it(&apos;polls for any messages in the queue&apos;, () =&gt; {
+      return expect(_response.result.events.length).to.eql(2);
+    });
+    it(&apos;returns the token&apos;, () =&gt; {
+      return expect(_response.result.token).to.eql(eventToken.code);
+    });
+    it(&apos;removes messages from the queue&apos;, () =&gt; {
+      return request({
+        method: &apos;GET&apos;,
+        uri: queueUri,
+        json: true
+      }).then((result) =&gt; {
+        return expect(result.messages).to.eql(0);
+      });
+    });
+  });
+  describe(&apos;on call with expired token&apos;, () =&gt; {
+    this.timeout(10000);
+    let eventToken;
+    let queueUri;
+    let _response;
+    before((done) =&gt; {
+
+      eventToken = new EventToken({
+        application: application._id,
+        environment: &apos;live&apos;
+      });
+
+      return eventToken.saveAsync()
+        .then(() =&gt; {
+          server._hapiServer.inject({
+            method: &apos;GET&apos;,
+            url: `/events?token=${encodeURIComponent(eventToken.code)}&amp;timeoutMS=50`,
+            headers: {
+              authorization: &apos;Hoist apiKey&apos;,
+              &apos;content-type&apos;: &apos;application/json&apos;
+            }
+          }, (response) =&gt; {
+            _response = response;
+            queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent(&apos;/&apos;)}/${encodeURIComponent(_response.result.token)}_stream`;
+            done();
+          });
+        });
+    });
+    after(() =&gt; {
+      return Promise.all([
+        request({
+          method: &apos;DELETE&apos;,
+          uri: queueUri,
+          json: true
+        }),
+        request({
+          method: &apos;DELETE&apos;,
+          uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent(&apos;/&apos;)}/hoist`,
+          json: true
+        }),
+        EventToken.removeAsync({})
+      ]);
+    });
+    it(&apos;sets up a new queue&apos;, () =&gt; {
+      return request({
+        method: &apos;GET&apos;,
+        uri: queueUri,
+        json: true
+      }).then((response) =&gt; {
+        return expect(response.name).to.exist;
+      });
+    });
+    it(&apos;returns a token&apos;, () =&gt; {
+      return expect(_response.result.token).to.exist &amp;&amp; expect(_response.result.token).to.not.eql(eventToken.code);
+    });
+  });
+});
+</code></pre>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.1.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

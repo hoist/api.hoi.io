@@ -1,16 +1,1 @@
-{
-  "Hoist": {
-    "messageBus": {
-      "type": "sqs"
-    },
-    "aws": {
-      "account": "AWSACCOUNT",
-      "secret": "AWSSECRET",
-      "region": "us-east-1",
-      "prefix": "TEST_"
-    },
-    "mongo": {
-      "db": "mongodb://localhost/hoist-test"
-    }
-  }
-}
+{}

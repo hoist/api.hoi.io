@@ -1,10 +1,20 @@
 {
   "Hoist": {
+    "application": {
+      "name": "api.hoi.io"
+    },
     "http": {
+      "host": "0.0.0.0",
       "port": 8000
     },
     "mongo": {
-      "db": "mongodb://localhost/hoist-default"
+      "core": {
+        "connectionString": "mongodb://db/hoist-default"
+      }
+    },
+    "rabbit": {
+      "url": "amqp://rabbitmq",
+      "managementurl": "http://guest:guest@rabbitmq:15672/"
     }
 
   }

@@ -1,60 +1,92 @@
 'use strict';
-require('../../bootstrap');
-var Server = require('../../../lib/server');
-var expect = require('chai').expect;
-var Model = require('hoist-model');
-var BBPromise = require('bluebird');
-var mongoose = BBPromise.promisifyAll(Model._mongoose);
-var config = require('config');
-var sinon = require('sinon');
-var pipeline = require('hoist-bucket-pipeline').Pipeline;
-var errors = require('hoist-errors');
-var _ = require('lodash');
-var bucketController = require('../../../lib/api_controllers/bucket_controller');
+import Server from '../../../lib/server';
+import config from 'config';
+import sinon from 'sinon';
+import Bluebird from 'bluebird';
+import BucketController from '../../../lib/api_controllers/bucket_controller';
+import errors from '@hoist/errors';
+import BucketPipeline from '@hoist/bucket-pipeline';
+import {
+  expect
+}
+from 'chai';
+import {
+  _mongoose,
+  Organisation,
+  Application
+}
+from '@hoist/model';
 
+Bluebird.promisifyAll(_mongoose);
+
+/** @test {BucketController} */
 describe('Bucket Routes', function () {
-  var server;
+  let server;
+  let application;
   before(function () {
-    server = Server.createServer();
-    return BBPromise.all([
-      mongoose.connectAsync(config.get('Hoist.mongo.db')),
-      new Model.Organisation({
+    server = new Server();
+    server._createServer();
+    return Promise.all([
+      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),
+      new Organisation({
         _id: 'orgid',
         name: 'test org',
         slug: 'org'
       }).saveAsync(),
-      new Model.Application({
+      new Application({
         _id: 'appid2',
         organisation: 'orgid',
         name: 'test app',
         apiKey: 'apiKey',
         slug: 'app'
       }).saveAsync()
+      .then((results) => {
+        application = results[0];
+      })
     ]);
   });
   after(function () {
-    return BBPromise.all([
-      Model.Organisation.removeAsync(),
-      Model.Application.removeAsync()
+    return Promise.all([
+      Organisation.removeAsync(),
+      Application.removeAsync()
     ]).then(function () {
-      return mongoose.disconnectAsync();
+      return _mongoose.disconnectAsync();
     });
   });
-  describe('Has GET /bucket/{key} avaliable', function() {
-    it('has matching path', function() {
-      var r = _.find(bucketController.getRoutes(), function(item) { return item.path === "/bucket/{key}";}) || {};
-      expect(r.path).to.eql("/bucket/{key}");
+  describe('Sets up correct routes', () => {
+    let mockServer = {
+      route: sinon.stub()
+    };
+    let bucketController;
+    before(() => {
+      bucketController = new BucketController();
+      return bucketController.mapRoutes(mockServer);
+    });
+    it('creates GET /bucket/{key}', () => {
+      return expect(mockServer.route).to.have.been.calledWith({
+        config: {
+          auth: "hoist",
+          bind: bucketController
+        },
+        handler: bucketController.getBucket,
+        method: ["GET"],
+        path: '/bucket/{key}'
+      });
     });
   });
   describe('GET /bucket/{key}', function () {
     describe('with matching bucket', function () {
       var _response;
-      var _bucket = {"key":"MOOSE", toObject:function(){return {"key":"MOOSE"};}};
+      var _bucket = {
+        "key": "MOOSE"
+      };
       before(function (done) {
-        sinon.stub(pipeline.prototype, 'get').returns(BBPromise.resolve(_bucket));
-        server.inject({
+        sinon.stub(BucketPipeline.prototype, 'get', () => {
+          return Promise.resolve(_bucket);
+        });
+        server._hapiServer.inject({
           method: 'GET',
-          url: '/bucket/eventid',
+          url: '/bucket/bucket-key',
           headers: {
             authorization: 'Hoist apiKey'
           }
@@ -63,21 +95,28 @@ describe('Bucket Routes', function () {
           done();
         });
       });
-      after(function() {
-        pipeline.prototype.get.restore();
+      after(function () {
+        BucketPipeline.prototype.get.restore();
       });
-      it('returns the bucket JSON', function() {
-        expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket.toObject())));
+      it('returns the bucket JSON', function () {
+        return expect(JSON.parse(_response.payload)).to.eql(JSON.parse(JSON.stringify(_bucket)));
       });
-      it('returns 200', function() {
+      it('sends correct context to pipeline', () => {
+        return expect(BucketPipeline.prototype.get)
+          .to.have.been.calledWith({
+            application: application.toObject(),
+            environment: 'live'
+          }, 'bucket-key');
+      });
+      it('returns 200', function () {
         expect(_response.statusCode).to.eql(200);
       });
     });
-    describe('with no matching bucket', function() {
+    describe('with no matching bucket', function () {
       var _response;
       before(function (done) {
-        sinon.stub(pipeline.prototype, 'get').returns(BBPromise.resolve(null));
-        server.inject({
+        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));
+        server._hapiServer.inject({
           method: 'GET',
           url: '/bucket/eventid',
           headers: {
@@ -88,18 +127,18 @@ describe('Bucket Routes', function () {
           done();
         });
       });
-      after(function() {
-        pipeline.prototype.get.restore();
+      after(function () {
+        BucketPipeline.prototype.get.restore();
       });
-      it('responds with 404 NOT FOUND', function() {
+      it('responds with 404 NOT FOUND', function () {
         expect(_response.statusCode).to.eq(404);
       });
     });
-    describe('with no bucket key supplied', function() {
+    describe('with no bucket key supplied', function () {
       var _response;
       before(function (done) {
-        sinon.stub(pipeline.prototype, 'get').returns(BBPromise.resolve(null));
-        server.inject({
+        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.resolve(null));
+        server._hapiServer.inject({
           method: 'GET',
           url: '/bucket/',
           headers: {
@@ -110,18 +149,18 @@ describe('Bucket Routes', function () {
           done();
         });
       });
-      after(function() {
-        pipeline.prototype.get.restore();
+      after(function () {
+        BucketPipeline.prototype.get.restore();
       });
-      it('responds with 404 NOT FOUND', function() {
+      it('responds with 404 NOT FOUND', function () {
         expect(_response.statusCode).to.eq(404);
       });
     });
-    describe('with hoist err while getting bucket', function() {
+    describe('with hoist err while getting bucket', function () {
       var _response;
       before(function (done) {
-        sinon.stub(pipeline.prototype, 'get').returns(BBPromise.reject(new errors.hoistError('TEST')));
-        server.inject({
+        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject(new errors.HoistError('TEST')));
+        server._hapiServer.inject({
           method: 'GET',
           url: '/bucket/eventid',
           headers: {
@@ -132,18 +171,18 @@ describe('Bucket Routes', function () {
           done();
         });
       });
-      after(function() {
-        pipeline.prototype.get.restore();
+      after(function () {
+        BucketPipeline.prototype.get.restore();
       });
-      it('responds with 500', function() {
+      it('responds with 500', function () {
         expect(_response.statusCode).to.eq(500);
       });
     });
-    describe('with non hoist err while getting bucket', function() {
+    describe('with non hoist err while getting bucket', function () {
       var _response;
       before(function (done) {
-        sinon.stub(pipeline.prototype, 'get').returns(BBPromise.reject({}));
-        server.inject({
+        sinon.stub(BucketPipeline.prototype, 'get').returns(Promise.reject({}));
+        server._hapiServer.inject({
           method: 'GET',
           url: '/bucket/eventid',
           headers: {
@@ -154,10 +193,10 @@ describe('Bucket Routes', function () {
           done();
         });
       });
-      after(function() {
-        pipeline.prototype.get.restore();
+      after(function () {
+        BucketPipeline.prototype.get.restore();
       });
-      it('responds with 500', function() {
+      it('responds with 500', function () {
         expect(_response.statusCode).to.eq(500);
       });
     });

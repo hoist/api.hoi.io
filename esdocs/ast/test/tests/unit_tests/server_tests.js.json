@@ -1,0 +1,59 @@
+{
+  "type": "Program",
+  "body": [],
+  "sourceType": "module",
+  "range": [
+    2339,
+    2339
+  ],
+  "loc": {
+    "start": {
+      "line": 82,
+      "column": 0
+    },
+    "end": {
+      "line": 82,
+      "column": 0
+    }
+  },
+  "leadingComments": [
+    {
+      "type": "Block",
+      "value": "'use strict';\nvar server = require('../../lib/server');\nvar sinon = require('sinon');\nvar BBPromise = require('bluebird');\nvar Model = require('hoist-model');\nvar mongoose = Model._mongoose;\nvar expect = require('chai').expect;\nvar config = require('config');\nvar router = require('../../lib/router');\n\ndescribe('Server', function () {\n\n  before(function () {\n\n\n  });\n  describe('#start', function () {\n    var hapiServer = {\n      start: sinon.stub().yields()\n    };\n    before(function () {\n      sinon.stub(server, 'createServer').returns(BBPromise.promisifyAll(hapiServer));\n      sinon.stub(mongoose, 'connect').yields();\n      return server.start();\n    });\n    after(function () {\n      server.createServer.restore();\n      mongoose.connect.restore();\n      delete server.server;\n    });\n    it('creates server', function () {\n      return expect(server.createServer).to.have.been.called;\n    });\n    it('starts listening', function () {\n      return expect(hapiServer.start).to.have.been.called;\n    });\n    it('opens mongodb connection', function () {\n      return expect(mongoose.connect).to.have.been.calledWith(config.get('Hoist.mongo.db'));\n    });\n  });\n  describe('#stop', function () {\n    var hapiServer = {\n      stop: sinon.stub().yields()\n    };\n    before(function () {\n      server.server = BBPromise.promisifyAll(hapiServer);\n      sinon.stub(mongoose, 'disconnect').yields();\n      return server.stop();\n    });\n    after(function () {\n      mongoose.disconnect.restore();\n      delete server.server;\n    });\n    it('stops listening', function () {\n      return expect(hapiServer.stop).to.have.been.called;\n    });\n    it('closes mongodb connection', function () {\n      return expect(mongoose.disconnect).to.have.been.called;\n    });\n  });\n  describe('#createServer', function () {\n    var hapiServer;\n    before(function () {\n      sinon.stub(router, 'map');\n      hapiServer = server.createServer();\n    });\n    after(function () {\n      router.map.restore();\n    });\n    it('returns a promisifiedServer', function () {\n      return expect(hapiServer).to.respondTo('startAsync');\n    });\n    it('configures correct port', function () {\n      return expect(hapiServer.info.port).to.eql(8000);\n    });\n    it('maps routes', function () {\n      return expect(router.map).to.have.been.called;\n    });\n  });\n});\n",
+      "range": [
+        0,
+        2338
+      ],
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 81,
+          "column": 2
+        }
+      }
+    }
+  ],
+  "comments": [
+    {
+      "type": "Block",
+      "value": "'use strict';\nvar server = require('../../lib/server');\nvar sinon = require('sinon');\nvar BBPromise = require('bluebird');\nvar Model = require('hoist-model');\nvar mongoose = Model._mongoose;\nvar expect = require('chai').expect;\nvar config = require('config');\nvar router = require('../../lib/router');\n\ndescribe('Server', function () {\n\n  before(function () {\n\n\n  });\n  describe('#start', function () {\n    var hapiServer = {\n      start: sinon.stub().yields()\n    };\n    before(function () {\n      sinon.stub(server, 'createServer').returns(BBPromise.promisifyAll(hapiServer));\n      sinon.stub(mongoose, 'connect').yields();\n      return server.start();\n    });\n    after(function () {\n      server.createServer.restore();\n      mongoose.connect.restore();\n      delete server.server;\n    });\n    it('creates server', function () {\n      return expect(server.createServer).to.have.been.called;\n    });\n    it('starts listening', function () {\n      return expect(hapiServer.start).to.have.been.called;\n    });\n    it('opens mongodb connection', function () {\n      return expect(mongoose.connect).to.have.been.calledWith(config.get('Hoist.mongo.db'));\n    });\n  });\n  describe('#stop', function () {\n    var hapiServer = {\n      stop: sinon.stub().yields()\n    };\n    before(function () {\n      server.server = BBPromise.promisifyAll(hapiServer);\n      sinon.stub(mongoose, 'disconnect').yields();\n      return server.stop();\n    });\n    after(function () {\n      mongoose.disconnect.restore();\n      delete server.server;\n    });\n    it('stops listening', function () {\n      return expect(hapiServer.stop).to.have.been.called;\n    });\n    it('closes mongodb connection', function () {\n      return expect(mongoose.disconnect).to.have.been.called;\n    });\n  });\n  describe('#createServer', function () {\n    var hapiServer;\n    before(function () {\n      sinon.stub(router, 'map');\n      hapiServer = server.createServer();\n    });\n    after(function () {\n      router.map.restore();\n    });\n    it('returns a promisifiedServer', function () {\n      return expect(hapiServer).to.respondTo('startAsync');\n    });\n    it('configures correct port', function () {\n      return expect(hapiServer.info.port).to.eql(8000);\n    });\n    it('maps routes', function () {\n      return expect(router.map).to.have.been.called;\n    });\n  });\n});\n",
+      "range": [
+        0,
+        2338
+      ],
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 81,
+          "column": 2
+        }
+      }
+    }
+  ]
+}

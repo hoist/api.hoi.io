@@ -114,7 +114,8 @@ Content-Type: application/json
 + Response 201
     [Event Stream][]
 
-# Get an event [/event/{id}]
+
+#Create an event [/event/{eventName}]
 
 + Model (application/json; charset=utf-8)
 
@@ -130,26 +131,6 @@ Content-Type: application/json
                 }
             }
 
-## Retrieve a single Event [GET]
-
-Get the event with the specified id
-
-+ Parameters
-
-    + id (string, `eventid`) ... Id of the event to return
-
-+ Request
-
-    + Headers
-
-              Content-Type: application/json
-              Authorization: Hoist {authKey}
-
-+ Response 200
-
-    [Get an event][]
-
-#Create an event [/event/{eventName}]
 
 ## Add an event [POST]
 
@@ -174,4 +155,4 @@ Create a new event with the name specified in url, the * request body * will be 
       ```
 
 + Response 201
-    [Get an event][]
+    [Create an event][]
