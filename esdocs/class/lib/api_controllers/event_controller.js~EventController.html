@@ -75,13 +75,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import EventController from &apos;<span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber17">api.hoi.io/lib/api_controllers/event_controller.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import EventController from &apos;<span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber18">api.hoi.io/lib/api_controllers/event_controller.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber17">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber18">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -93,6 +93,8 @@
   <span data-ice="instanceDoc"><span><a href="variable/index.html#static-variable-eventController">eventController</a></span></span>
 </div>
 
+  
+  
   
   
   
@@ -218,6 +220,32 @@
     <td>
       <div>
         <p>
+           <span data-ice="name"><span><a href="class/lib/api_controllers/event_controller.js~EventController.html#instance-method-getEventPayload">getEventPayload</a></span></span><span data-ice="signature">(req: <span><a href="http://hapijs.com/api#request-object">Request</a></span>, reply: <span><a href="http://hapijs.com/api#reply-interface">Reply</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>get an events payload</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
            <span data-ice="name"><span><a href="class/lib/api_controllers/event_controller.js~EventController.html#instance-method-getStream">getStream</a></span></span><span data-ice="signature">(req: <span><a href="http://hapijs.com/api#request-object">Request</a></span>, reply: <span><a href="http://hapijs.com/api#reply-interface">Reply</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
         </p>
       </div>
@@ -280,7 +308,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber21">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber22">source</a></span></span>
     </span>
   </h3>
 
@@ -325,7 +353,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber50">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber52">source</a></span></span>
     </span>
   </h3>
 
@@ -400,7 +428,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber79">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber81">source</a></span></span>
     </span>
   </h3>
 
@@ -453,6 +481,81 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getEventPayload">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">getEventPayload</span><span data-ice="signature">(req: <span><a href="http://hapijs.com/api#request-object">Request</a></span>, reply: <span><a href="http://hapijs.com/api#reply-interface">Reply</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber91">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>get an events payload</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">req</td>
+      <td data-ice="type"><span><a href="http://hapijs.com/api#request-object">Request</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>the Hapi Request object</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">reply</td>
+      <td data-ice="type"><span><a href="http://hapijs.com/api#reply-interface">Reply</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>the Hapi Reply object</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tr>
+        <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
+        
+      </tr>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-getStream">
     <span class="access" data-ice="access">public</span>
     
@@ -463,7 +566,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber89">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber110">source</a></span></span>
     </span>
   </h3>
 
@@ -538,7 +641,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber275">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/event_controller.js.html#lineNumber296">source</a></span></span>
     </span>
   </h3>
 
@@ -589,7 +692,7 @@
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.1.3)</span></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.1.4)</span></a>
 </footer>
 
 <script src="script/search_index.js"></script>

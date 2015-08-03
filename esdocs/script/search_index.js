@@ -666,6 +666,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "lib/api_controllers/event_controller.js~eventcontroller#geteventpayload",
+    "class/lib/api_controllers/event_controller.js~EventController.html#instance-method-getEventPayload",
+    "lib/api_controllers/event_controller.js~EventController#getEventPayload",
+    "method"
+  ],
+  [
     "lib/api_controllers/event_controller.js~eventcontroller#getstream",
     "class/lib/api_controllers/event_controller.js~EventController.html#instance-method-getStream",
     "lib/api_controllers/event_controller.js~EventController#getStream",
