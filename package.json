@@ -54,7 +54,7 @@
     "@hoist/bucket-pipeline": "^2.0.0",
     "@hoist/context": "^1.0.4",
     "@hoist/errors": "^1.0.3",
-    "@hoist/events-pipeline": "^2.0.4",
+    "@hoist/events-pipeline": "^2.0.5",
     "@hoist/logger": "^1.0.0",
     "@hoist/model": "^1.1.0",
     "amqplib": "^0.3.2",
