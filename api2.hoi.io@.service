@@ -13,5 +13,5 @@ ExecStop=/usr/bin/docker stop api.hoi.io-%i
 TimeoutStartSec=30m
 
 [X-Fleet]
-Conflicts=api.hoi.io@*.service
+Conflicts=api2.hoi.io@*.service
 MachineMetadata=container_type=web
