@@ -599,6 +599,139 @@
     "kind": "file",
     "static": true,
     "variation": null,
+    "name": "lib/api_controllers/health_check_controller.js",
+    "memberof": null,
+    "longname": "lib/api_controllers/health_check_controller.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "'use strict';\nimport logger from '@hoist/logger';\nimport errors from '@hoist/errors';\nimport Boom from 'boom';\nimport {\n  _mongoose\n}\nfrom '@hoist/model';\n\n/**\n * API Controller for /event endpoints\n */\nclass EventController {\n  /**\n   * create new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._logger.info('created new event controller');\n  }\n  heartbeat(request, reply) {\n    return Promise.resolve()\n      .then(() => {\n        this._logger.info('carrying out heartbeat');\n        if (_mongoose.connection.readyState !== 1) {\n          this._logger.info('database not connected');\n          let response = reply({\n            database: false,\n            ok: false\n          });\n          response.code(500);\n          return response;\n        }\n        this._logger.info('heartbeat ok');\n        return reply({\n          database: true,\n          ok: true\n        });\n      }).catch((err) => {\n        if (!errors.isHoistError(err)) {\n          this._logger.error(err);\n          err = new errors.HoistError();\n        }\n        reply(Boom.wrap(err, parseInt(err.code)));\n      });\n  }\n\n\n  /**\n   * map routes for this controller\n   * @param {HapiServer} server - the Hapi Server instance\n   */\n  mapRoutes(server) {\n    this._logger.info('mapping health check routes');\n    server.route([{\n      // GET /events\n      path: '/api/heartbeat',\n      method: ['GET'],\n      handler: this.heartbeat,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }]);\n  }\n}\n\nexport default EventController;\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "EventController",
+    "memberof": "lib/api_controllers/health_check_controller.js",
+    "longname": "lib/api_controllers/health_check_controller.js~EventController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/health_check_controller.js",
+    "importStyle": "EventController",
+    "description": "API Controller for /event endpoints",
+    "lineNumber": 13,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "lib/api_controllers/health_check_controller.js~EventController",
+    "longname": "lib/api_controllers/health_check_controller.js~EventController#constructor",
+    "access": null,
+    "description": "create new instance",
+    "lineNumber": 17,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_logger",
+    "memberof": "lib/api_controllers/health_check_controller.js~EventController",
+    "longname": "lib/api_controllers/health_check_controller.js~EventController#_logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "heartbeat",
+    "memberof": "lib/api_controllers/health_check_controller.js~EventController",
+    "longname": "lib/api_controllers/health_check_controller.js~EventController#heartbeat",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "params": [
+      {
+        "name": "request",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "reply",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "mapRoutes",
+    "memberof": "lib/api_controllers/health_check_controller.js~EventController",
+    "longname": "lib/api_controllers/health_check_controller.js~EventController#mapRoutes",
+    "access": null,
+    "description": "map routes for this controller",
+    "lineNumber": 55,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "HapiServer"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "server",
+        "description": "the Hapi Server instance"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "eventController",
+    "memberof": "lib/api_controllers/health_check_controller.js",
+    "longname": "lib/api_controllers/health_check_controller.js~eventController",
+    "access": null,
+    "export": true,
+    "importPath": "api.hoi.io/lib/api_controllers/health_check_controller.js",
+    "importStyle": "eventController",
+    "description": null,
+    "lineNumber": 70,
+    "undocument": true,
+    "type": {
+      "types": [
+        "lib/api_controllers/health_check_controller.js~EventController"
+      ]
+    }
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
     "name": "lib/authentication/hoist_plugin.js",
     "memberof": null,
     "longname": "lib/authentication/hoist_plugin.js",
@@ -803,7 +936,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "'use strict';\n\nimport EventController from './api_controllers/event_controller';\nimport BucketController from './api_controllers/bucket_controller';\n\n/**\n * map routes for this server\n */\nclass Router {\n\n  /**\n   * map the routes to the server\n   * @param {HapiServer} server\n   */\n  map(server) {\n    this._eventController = new EventController();\n    this._bucketController = new BucketController();\n    this._eventController.mapRoutes(server);\n    this._bucketController.mapRoutes(server);\n    server.route({\n      method: 'GET',\n      path: '/',\n      handler: function (request, reply) {\n        reply.file('./docs/index.html');\n      }\n    });\n  }\n}\n\nexport default Router;\n"
+    "content": "'use strict';\n\nimport EventController from './api_controllers/event_controller';\nimport BucketController from './api_controllers/bucket_controller';\nimport HealthCheckController from './api_controllers/health_check_controller';\n\n/**\n * map routes for this server\n */\nclass Router {\n\n  /**\n   * map the routes to the server\n   * @param {HapiServer} server\n   */\n  map(server) {\n    this._eventController = new EventController();\n    this._bucketController = new BucketController();\n    this._healthCheckController = new HealthCheckController();\n    this._healthCheckController.mapRoutes(server);\n    this._eventController.mapRoutes(server);\n    this._bucketController.mapRoutes(server);\n    server.route({\n      method: 'GET',\n      path: '/',\n      handler: function (request, reply) {\n        reply.file('./docs/index.html');\n      }\n    });\n  }\n}\n\nexport default Router;\n"
   },
   {
     "kind": "class",
@@ -817,7 +950,7 @@
     "importPath": "api.hoi.io/lib/router.js",
     "importStyle": "Router",
     "description": "map routes for this server",
-    "lineNumber": 9,
+    "lineNumber": 10,
     "interface": false
   },
   {
@@ -829,7 +962,7 @@
     "longname": "lib/router.js~Router#map",
     "access": null,
     "description": "map the routes to the server",
-    "lineNumber": 15,
+    "lineNumber": 16,
     "params": [
       {
         "nullable": null,
@@ -853,7 +986,7 @@
     "longname": "lib/router.js~Router#_eventController",
     "access": null,
     "description": null,
-    "lineNumber": 16,
+    "lineNumber": 17,
     "undocument": true,
     "type": {
       "types": [
@@ -870,7 +1003,24 @@
     "longname": "lib/router.js~Router#_bucketController",
     "access": null,
     "description": null,
-    "lineNumber": 17,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "_healthCheckController",
+    "memberof": "lib/router.js~Router",
+    "longname": "lib/router.js~Router#_healthCheckController",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
     "undocument": true,
     "type": {
       "types": [
@@ -890,7 +1040,7 @@
     "importPath": "api.hoi.io/lib/router.js",
     "importStyle": "router",
     "description": null,
-    "lineNumber": 30,
+    "lineNumber": 33,
     "undocument": true,
     "type": {
       "types": [

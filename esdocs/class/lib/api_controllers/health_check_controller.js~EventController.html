@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">Server | API Document</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">EventController | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -77,22 +77,22 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Server from &apos;<span><a href="file/lib/server.js.html#lineNumber17">api.hoi.io/lib/server.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import EventController from &apos;<span><a href="file/lib/api_controllers/health_check_controller.js.html#lineNumber13">api.hoi.io/lib/api_controllers/health_check_controller.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/lib/server.js.html#lineNumber17">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/lib/api_controllers/health_check_controller.js.html#lineNumber13">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
-  <h1 data-ice="name">Server</h1>
+  <h1 data-ice="name">EventController</h1>
 
   <div data-ice="instanceDocs" class="instance-docs">
     <span>You can directly use instance of this class.</span>
     
-  <span data-ice="instanceDoc"><span><a href="variable/index.html#static-variable-server">server</a></span></span>
+  <span data-ice="instanceDoc"><span><a href="variable/index.html#static-variable-eventController">eventController</a></span></span>
 </div>
 
   
@@ -107,7 +107,7 @@
 
   
   
-  <div class="description" data-ice="description"><p>a wrapper around the HapiServer</p>
+  <div class="description" data-ice="description"><p>API Controller for /event endpoints</p>
 </div>
 
   
@@ -136,13 +136,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/lib/server.js~Server.html#instance-constructor-constructor">constructor</a></span></span>
+           <span data-ice="name"><span><a href="class/lib/api_controllers/health_check_controller.js~EventController.html#instance-constructor-constructor">constructor</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>create a new instance</p>
+        <div data-ice="description"><p>create new instance</p>
 </div>
       </div>
     </td>
@@ -170,14 +170,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/lib/server.js~Server.html#instance-method-start">start</a></span></span><span data-ice="signature">(): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/lib/api_controllers/health_check_controller.js~EventController.html#instance-method-heartbeat">heartbeat</a></span></span><span data-ice="signature">(request: <span>*</span>, reply: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>start the server and configure it</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -196,13 +195,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/lib/server.js~Server.html#instance-method-stop">stop</a></span></span><span data-ice="signature">(): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/lib/api_controllers/health_check_controller.js~EventController.html#instance-method-mapRoutes">mapRoutes</a></span></span><span data-ice="signature">(server: <span><a href="http://hapijs.com/api#server">HapiServer</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>stop the server</p>
+        <div data-ice="description"><p>map routes for this controller</p>
 </div>
       </div>
     </td>
@@ -232,14 +231,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/server.js.html#lineNumber22">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/health_check_controller.js.html#lineNumber17">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>create a new instance</p>
+  <div data-ice="description"><p>create new instance</p>
 </div>
 
   
@@ -267,29 +266,50 @@
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-start">
+  <h3 data-ice="anchor" id="instance-method-heartbeat">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">start</span><span data-ice="signature">(): <span>*</span></span>
+    <span data-ice="name">heartbeat</span><span data-ice="signature">(request: <span>*</span>, reply: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/server.js.html#lineNumber51">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/health_check_controller.js.html#lineNumber23">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>start the server and configure it</p>
-</div>
+  
 
   
 
-  <div data-ice="properties">
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">request</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">reply</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
 </div>
 
   <div class="return-params" data-ice="returnParams">
@@ -318,42 +338,49 @@
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-stop">
+  <h3 data-ice="anchor" id="instance-method-mapRoutes">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">stop</span><span data-ice="signature">(): <span>*</span></span>
+    <span data-ice="name">mapRoutes</span><span data-ice="signature">(server: <span><a href="http://hapijs.com/api#server">HapiServer</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/lib/server.js.html#lineNumber62">source</a></span></span>
+      <span data-ice="source"><span><a href="file/lib/api_controllers/health_check_controller.js.html#lineNumber55">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>stop the server</p>
+  <div data-ice="description"><p>map routes for this controller</p>
 </div>
 
   
 
-  <div data-ice="properties">
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">server</td>
+      <td data-ice="type"><span><a href="http://hapijs.com/api#server">HapiServer</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>the Hapi Server instance</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
-      </tr>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 

@@ -12,6 +12,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "api.hoi.io/lib/api_controllers/health_check_controller.js~eventcontroller",
+    "class/lib/api_controllers/health_check_controller.js~EventController.html",
+    "<span>EventController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/health_check_controller.js</span>",
+    "class"
+  ],
+  [
     "api.hoi.io/lib/authentication/hoist_plugin.js~hoistauthentication",
     "class/lib/authentication/hoist_plugin.js~HoistAuthentication.html",
     "<span>HoistAuthentication</span> <span class=\"search-result-import-path\">api.hoi.io/lib/authentication/hoist_plugin.js</span>",
@@ -39,6 +45,12 @@ window.esdocSearchIndex = [
     "api.hoi.io/lib/api_controllers/event_controller.js~eventcontroller",
     "variable/index.html#static-variable-eventController",
     "<span>eventController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/event_controller.js</span>",
+    "variable"
+  ],
+  [
+    "api.hoi.io/lib/api_controllers/health_check_controller.js~eventcontroller",
+    "variable/index.html#static-variable-eventController",
+    "<span>eventController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/health_check_controller.js</span>",
     "variable"
   ],
   [
@@ -681,6 +693,30 @@ window.esdocSearchIndex = [
     "lib/api_controllers/event_controller.js~eventcontroller#maproutes",
     "class/lib/api_controllers/event_controller.js~EventController.html#instance-method-mapRoutes",
     "lib/api_controllers/event_controller.js~EventController#mapRoutes",
+    "method"
+  ],
+  [
+    "lib/api_controllers/health_check_controller.js",
+    "file/lib/api_controllers/health_check_controller.js.html",
+    "lib/api_controllers/health_check_controller.js",
+    "file"
+  ],
+  [
+    "lib/api_controllers/health_check_controller.js~eventcontroller#constructor",
+    "class/lib/api_controllers/health_check_controller.js~EventController.html#instance-constructor-constructor",
+    "lib/api_controllers/health_check_controller.js~EventController#constructor",
+    "method"
+  ],
+  [
+    "lib/api_controllers/health_check_controller.js~eventcontroller#heartbeat",
+    "class/lib/api_controllers/health_check_controller.js~EventController.html#instance-method-heartbeat",
+    "lib/api_controllers/health_check_controller.js~EventController#heartbeat",
+    "method"
+  ],
+  [
+    "lib/api_controllers/health_check_controller.js~eventcontroller#maproutes",
+    "class/lib/api_controllers/health_check_controller.js~EventController.html#instance-method-mapRoutes",
+    "lib/api_controllers/health_check_controller.js~EventController#mapRoutes",
     "method"
   ],
   [

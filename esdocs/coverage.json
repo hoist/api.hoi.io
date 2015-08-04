@@ -1,7 +1,7 @@
 {
-  "coverage": "81.48%",
-  "expectCount": 27,
-  "actualCount": 22,
+  "coverage": "78.12%",
+  "expectCount": 32,
+  "actualCount": 25,
   "files": {
     "lib/api_controllers/bucket_controller.js": {
       "expectCount": 5,
@@ -10,6 +10,10 @@
     "lib/api_controllers/event_controller.js": {
       "expectCount": 8,
       "actualCount": 7
+    },
+    "lib/api_controllers/health_check_controller.js": {
+      "expectCount": 5,
+      "actualCount": 3
     },
     "lib/authentication/hoist_plugin.js": {
       "expectCount": 6,
