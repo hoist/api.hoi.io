@@ -385,7 +385,7 @@ class EventController {
         bind: this
       }
     }, {
-      // GET /event
+      // GET /event/payload/{id}
       path: routePrefix + &apos;/payload/{id}&apos;,
       method: [&apos;GET&apos;],
       handler: this.getEventPayload,
@@ -394,7 +394,7 @@ class EventController {
         bind: this
       }
     }, {
-      // GET /event
+      // GET /event/{id}
       path: routePrefix + &apos;/{id}&apos;,
       method: [&apos;GET&apos;],
       handler: this.getEvent,
