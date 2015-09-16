@@ -1,0 +1,13 @@
+web:
+  build: .
+  external_links:
+    - hoist_db_1:db
+    - hoist_redis_1:redis
+    - hoist_rabbitmq_1:rabbitmq
+  ports:
+   - "3005:8000"
+  environment:
+   - NODE_ENV=docker
+   - NODE_TLS_REJECT_UNAUTHORIZED=0
+  volumes_from:
+   - hoist_config_1
