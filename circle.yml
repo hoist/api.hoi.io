@@ -1,6 +1,6 @@
 machine:
   pre:
-    - sudo curl -L -o /usr/bin/docker 'http://s3-external-1.amazonaws.com/circle-downloads/docker-1.6.2-circleci'; sudo chmod 0755 /usr/bin/docker; true;
+    - sudo curl -L -o /usr/bin/docker 'http://s3-external-1.amazonaws.com/circle-downloads/docker-1.8.1-circleci'; sudo chmod 0755 /usr/bin/docker; true;
   services:
     - docker
   node:
@@ -22,8 +22,8 @@ dependencies:
   override:
     - mkdir -p ~/docker
     - if [[ -e ~/docker/api.hoi.io.tar ]]; then docker load -i ~/docker/api.hoi.io.tar; fi
-    - docker build -t quay.io/hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//} .
-    - docker save "quay.io/hoist/api.hoi.io" > ~/docker/api.hoi.io.tar
+    - docker build -t hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//} .
+    - docker save "hoist/api.hoi.io" > ~/docker/api.hoi.io.tar
 test:
   override:
     - docker kill mongodb; true;
@@ -34,7 +34,7 @@ test:
     - docker rm api.hoi.io-test; true;
     - docker run -d --name mongodb mongo
     - docker run -d -e RABBITMQ_NODENAME=rabbitmq --name rabbitmq rabbitmq:3-management
-    - docker run -t --link mongodb:db --link rabbitmq:rabbitmq --name api.hoi.io-test --entrypoint gulp quay.io/hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//} test
+    - docker run -t --link mongodb:db --link rabbitmq:rabbitmq --name api.hoi.io-test --entrypoint gulp hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//} test
   post:
     - docker cp api.hoi.io-test:/usr/src/app/coverage ~/
 general:
@@ -49,8 +49,8 @@ deployment:
     owner: hoist
     commands:
       - echo ${DOCKER_CONFIG} > .dockercfg
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
-      - docker push quay.io/hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//}
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push hoist/api.hoi.io:${CIRCLE_BRANCH//feature\//}
 notify:
   webhooks:
     - url: https://overlord.hoist.io/api/webhook/circleci?api_token=xc1zrzacmxp9samlj9nya4gzay
