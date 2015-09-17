@@ -81,11 +81,15 @@
 import Boom from &apos;boom&apos;;
 import errors from &apos;@hoist/errors&apos;;
 import logger from &apos;@hoist/logger&apos;;
-import {Receiver} from &apos;@hoist/broker&apos;;
+import {
+  Receiver
+}
+from &apos;@hoist/broker&apos;;
 import Pipeline from &apos;@hoist/events-pipeline&apos;;
 import amqp from &apos;amqplib&apos;;
 import config from &apos;config&apos;;
 import moment from &apos;moment&apos;;
+import Bluebird from &apos;bluebird&apos;;
 import {
   EventToken
 }
@@ -174,7 +178,7 @@ class EventController {
       application: context.application._id
     }, &apos;requesting event payload&apos;);
     return this._receiver._getPayloadFromId(context.application._id, req.params.id)
-      .then(function(payload) {
+      .then(function (payload) {
         reply(payload);
       });
 
@@ -212,11 +216,6 @@ class EventController {
         return this._composeStreamReply(reply, eventToken, events, timeoutTime, ch, finished);
       });
     }
-    this._logger.info({
-      events: events.length,
-      token: eventToken.code,
-      finished
-    }, &apos;composing reply&apos;);
     if (!finished) {
       this._logger.info({
         events: events.length,
@@ -256,7 +255,9 @@ class EventController {
           token: eventToken.code,
           timeoutTime
         }, &apos;recursing&apos;);
-        return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);
+        return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment))).then(() =&gt; {
+          return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);
+        });
       });
 
     } else {

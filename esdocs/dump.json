@@ -175,7 +175,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "'use strict';\nimport Boom from 'boom';\nimport errors from '@hoist/errors';\nimport logger from '@hoist/logger';\nimport {Receiver} from '@hoist/broker';\nimport Pipeline from '@hoist/events-pipeline';\nimport amqp from 'amqplib';\nimport config from 'config';\nimport moment from 'moment';\nimport {\n  EventToken\n}\nfrom '@hoist/model';\n\n/**\n * API Controller for /event endpoints\n */\nclass EventController {\n  /**\n   * create new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._logger.info('created new event controller');\n    this._pipeline = new Pipeline();\n    this._receiver = new Receiver();\n  }\n  _getChannel() {\n      return amqp.connect(config.get('Hoist.rabbit.url'))\n        .then((connection) => {\n          connection.on('error', (err) => {\n            this._logger.error(err);\n          });\n          return connection.createChannel()\n            .then((channel) => {\n              channel.on('error', (err) => {\n                this._logger.error(err);\n                connection.close();\n              });\n              return channel;\n            });\n        });\n    }\n    /**\n     * create a brand new event\n     * @param {Request} req - the Hapi Request object\n     * @param {Reply} reply - the Hapi Reply object\n     * @returns {Promise}\n     */\n  createEvent(req, reply) {\n    let eventName = req.params.eventName;\n    let context = req.auth.credentials;\n    this._logger.info({\n      application: context.application._id,\n      eventName\n    }, 'raising an event');\n    return this._pipeline.raise(context, eventName, req.payload)\n      .then((ev) => {\n        this._logger.info({\n          application: context.application._id,\n          eventName\n        }, 'event raised');\n        reply(ev)\n          .type('application/json; charset=utf-8')\n          .code(201);\n      }).catch((err) => {\n        if (!errors.isHoistError(err)) {\n          this._logger.error(err);\n          err = new errors.HoistError();\n        }\n        reply(Boom.wrap(err, parseInt(err.code)));\n      });\n  }\n\n  /**\n   * get an event\n   * @depreciated\n   */\n  getEvent(req, reply) {\n    reply(new Boom());\n  }\n\n  /**\n   * get an events payload\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getEventPayload(req, reply) {\n\n    let context = req.auth.credentials;\n    this._logger.info({\n      application: context.application._id\n    }, 'requesting event payload');\n    return this._receiver._getPayloadFromId(context.application._id, req.params.id)\n      .then(function(payload) {\n        reply(payload);\n      });\n\n  }\n\n  /**\n   * get an event in a stream or continue an existing stream\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getStream(req, reply) {\n    //ensure we have a connection to rabbitmq\n    let context = req.auth.credentials;\n    let token = req.query.token;\n    let filterBy = req.query.filterBy;\n    let filterValue = req.query.filterValue;\n    let timeout = req.query.timeoutMS && !isNaN(req.query.timeoutMS) ? parseInt(req.query.timeoutMS) : 10000;\n    let timeoutTime = moment().add(timeout, 'ms');\n    this._logger.info('ensuring rabbitmq is connected');\n\n    return this._getOrCreateStreamToken(token, context, filterBy, filterValue)\n      .then((eventToken) => {\n        //consume queue and start timeout\n        let events = [];\n        return this._composeStreamReply(reply, eventToken, events, timeoutTime, null, false);\n      }).catch((err) => {\n        this._logger.error(err);\n        reply(err);\n      });\n  }\n  _composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished) {\n    if (!channel) {\n      return this._getChannel().then((ch) => {\n        return this._composeStreamReply(reply, eventToken, events, timeoutTime, ch, finished);\n      });\n    }\n    this._logger.info({\n      events: events.length,\n      token: eventToken.code,\n      finished\n    }, 'composing reply');\n    if (!finished) {\n      this._logger.info({\n        events: events.length,\n        token: eventToken.code,\n        finished\n      }, 'checking for new messages');\n      //pull events from queue till we don't have any;\n      channel.get(`${eventToken.code}_stream`, {\n        noAck: true\n      }).then((message) => {\n        finished = false;\n        if (!message && events.length > 0) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'end of current messages');\n          finished = true;\n        } else if (!message && moment().isAfter(timeoutTime)) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'timed out');\n          finished = true;\n        } else if (message) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'adding message');\n          let event = JSON.parse(message.content.toString());\n          events.push(event);\n        }\n        this._logger.info({\n          events: events.length,\n          token: eventToken.code,\n          timeoutTime\n        }, 'recursing');\n        return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);\n      });\n\n    } else {\n      channel.connection.close();\n      this._logger.info({\n        events: events.length,\n        token: eventToken.code,\n        finished\n      }, 'sending response');\n      reply({\n        token: eventToken.code,\n        events: events\n      });\n    }\n  }\n  _getOrCreateStreamToken(token, context, filterBy, filterValue) {\n    return this._getChannel().then((channel) => {\n      //get the token if it exists\n      this._logger.info({\n        application: context.application._id,\n        token\n      }, 'loading token');\n      return EventToken.findOneAsync({\n        application: context.application._id,\n        environment: context.environment,\n        code: token\n      }).then((eventToken) => {\n        if (!eventToken) {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'no token found');\n          return null;\n        }\n        //check the queue exists\n        this._logger.info({\n          application: context.application._id,\n          token\n        }, 'checking for stream queue');\n        return channel.checkQueue(`${eventToken.code}_stream`).then(() => {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'stream queue exists');\n          return eventToken;\n        }).catch(() => {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'stream queue non existant');\n          //we have to reinitialize the connection here\n          return this._getChannel().then((ch) => {\n            //force token to recreate\n            channel = ch;\n            return null;\n          });\n        });\n      }).then((eventToken) => {\n        //if either of these dont exist create a token and queue\n        if (!eventToken) {\n          this._logger.info('creating new token');\n          return new EventToken({\n            application: context.application._id,\n            environment: context.environment\n          }).saveAsync().then((result) => {\n            eventToken = result;\n            this._logger.info({\n              token: eventToken.code,\n              application: context.application._id\n            }, 'created new token');\n            this._logger.info({\n              token: eventToken.code,\n              application: context.application._id\n            }, 'creating queue');\n            return channel.assertQueue(`${eventToken.code}_stream`, {\n              durable: true,\n              //expire in an hour of not checking\n              expires: 3600000\n            }).then(() => {\n              let eventNamePattern = '*';\n              let correlationIdPattern = '*';\n              if (filterBy === 'eventName') {\n                eventNamePattern = filterValue;\n              }\n              if (filterBy === 'correlationId') {\n                correlationIdPattern = '*';\n              }\n              let pattern = `event.${context.application._id}.${eventNamePattern}.${correlationIdPattern}`;\n              return channel.assertExchange('hoist', 'topic').then(() => {\n                return channel.bindQueue(`${eventToken.code}_stream`, `hoist`, pattern)\n                  .then(() => {\n                    this._logger.info({\n                      token: eventToken.code,\n                      application: context.application._id\n                    }, 'queue created');\n                    return eventToken;\n                  });\n              });\n\n            });\n          });\n        } else {\n          return eventToken;\n        }\n      }).then((eventToken) => {\n        channel.connection.close();\n        return eventToken;\n      });\n    });\n  }\n\n  /**\n   * map routes for this controller\n   * @param {HapiServer} server - the Hapi Server instance\n   */\n  mapRoutes(server) {\n    this._logger.info('mapping server routes');\n    let routePrefix = '/event';\n    server.route([{\n      // GET /events\n      path: routePrefix + 's',\n      method: ['GET'],\n      handler: this.getStream,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // GET /event/payload/{id}\n      path: routePrefix + '/payload/{id}',\n      method: ['GET'],\n      handler: this.getEventPayload,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // GET /event/{id}\n      path: routePrefix + '/{id}',\n      method: ['GET'],\n      handler: this.getEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // POST /event/eventName\n\n      path: routePrefix + '/{eventName}',\n      method: ['POST'],\n      handler: this.createEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }]);\n  }\n}\n\nexport default EventController;\n"
+    "content": "'use strict';\nimport Boom from 'boom';\nimport errors from '@hoist/errors';\nimport logger from '@hoist/logger';\nimport {\n  Receiver\n}\nfrom '@hoist/broker';\nimport Pipeline from '@hoist/events-pipeline';\nimport amqp from 'amqplib';\nimport config from 'config';\nimport moment from 'moment';\nimport Bluebird from 'bluebird';\nimport {\n  EventToken\n}\nfrom '@hoist/model';\n\n/**\n * API Controller for /event endpoints\n */\nclass EventController {\n  /**\n   * create new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._logger.info('created new event controller');\n    this._pipeline = new Pipeline();\n    this._receiver = new Receiver();\n  }\n  _getChannel() {\n      return amqp.connect(config.get('Hoist.rabbit.url'))\n        .then((connection) => {\n          connection.on('error', (err) => {\n            this._logger.error(err);\n          });\n          return connection.createChannel()\n            .then((channel) => {\n              channel.on('error', (err) => {\n                this._logger.error(err);\n                connection.close();\n              });\n              return channel;\n            });\n        });\n    }\n    /**\n     * create a brand new event\n     * @param {Request} req - the Hapi Request object\n     * @param {Reply} reply - the Hapi Reply object\n     * @returns {Promise}\n     */\n  createEvent(req, reply) {\n    let eventName = req.params.eventName;\n    let context = req.auth.credentials;\n    this._logger.info({\n      application: context.application._id,\n      eventName\n    }, 'raising an event');\n    return this._pipeline.raise(context, eventName, req.payload)\n      .then((ev) => {\n        this._logger.info({\n          application: context.application._id,\n          eventName\n        }, 'event raised');\n        reply(ev)\n          .type('application/json; charset=utf-8')\n          .code(201);\n      }).catch((err) => {\n        if (!errors.isHoistError(err)) {\n          this._logger.error(err);\n          err = new errors.HoistError();\n        }\n        reply(Boom.wrap(err, parseInt(err.code)));\n      });\n  }\n\n  /**\n   * get an event\n   * @depreciated\n   */\n  getEvent(req, reply) {\n    reply(new Boom());\n  }\n\n  /**\n   * get an events payload\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getEventPayload(req, reply) {\n\n    let context = req.auth.credentials;\n    this._logger.info({\n      application: context.application._id\n    }, 'requesting event payload');\n    return this._receiver._getPayloadFromId(context.application._id, req.params.id)\n      .then(function (payload) {\n        reply(payload);\n      });\n\n  }\n\n  /**\n   * get an event in a stream or continue an existing stream\n   * @param {Request} req - the Hapi Request object\n   * @param {Reply} reply - the Hapi Reply object\n   * @returns {Promise}\n   */\n  getStream(req, reply) {\n    //ensure we have a connection to rabbitmq\n    let context = req.auth.credentials;\n    let token = req.query.token;\n    let filterBy = req.query.filterBy;\n    let filterValue = req.query.filterValue;\n    let timeout = req.query.timeoutMS && !isNaN(req.query.timeoutMS) ? parseInt(req.query.timeoutMS) : 10000;\n    let timeoutTime = moment().add(timeout, 'ms');\n    this._logger.info('ensuring rabbitmq is connected');\n\n    return this._getOrCreateStreamToken(token, context, filterBy, filterValue)\n      .then((eventToken) => {\n        //consume queue and start timeout\n        let events = [];\n        return this._composeStreamReply(reply, eventToken, events, timeoutTime, null, false);\n      }).catch((err) => {\n        this._logger.error(err);\n        reply(err);\n      });\n  }\n  _composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished) {\n    if (!channel) {\n      return this._getChannel().then((ch) => {\n        return this._composeStreamReply(reply, eventToken, events, timeoutTime, ch, finished);\n      });\n    }\n    if (!finished) {\n      this._logger.info({\n        events: events.length,\n        token: eventToken.code,\n        finished\n      }, 'checking for new messages');\n      //pull events from queue till we don't have any;\n      channel.get(`${eventToken.code}_stream`, {\n        noAck: true\n      }).then((message) => {\n        finished = false;\n        if (!message && events.length > 0) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'end of current messages');\n          finished = true;\n        } else if (!message && moment().isAfter(timeoutTime)) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'timed out');\n          finished = true;\n        } else if (message) {\n          this._logger.info({\n            events: events.length,\n            token: eventToken.code,\n            timeoutTime\n          }, 'adding message');\n          let event = JSON.parse(message.content.toString());\n          events.push(event);\n        }\n        this._logger.info({\n          events: events.length,\n          token: eventToken.code,\n          timeoutTime\n        }, 'recursing');\n        return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment))).then(() => {\n          return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);\n        });\n      });\n\n    } else {\n      channel.connection.close();\n      this._logger.info({\n        events: events.length,\n        token: eventToken.code,\n        finished\n      }, 'sending response');\n      reply({\n        token: eventToken.code,\n        events: events\n      });\n    }\n  }\n  _getOrCreateStreamToken(token, context, filterBy, filterValue) {\n    return this._getChannel().then((channel) => {\n      //get the token if it exists\n      this._logger.info({\n        application: context.application._id,\n        token\n      }, 'loading token');\n      return EventToken.findOneAsync({\n        application: context.application._id,\n        environment: context.environment,\n        code: token\n      }).then((eventToken) => {\n        if (!eventToken) {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'no token found');\n          return null;\n        }\n        //check the queue exists\n        this._logger.info({\n          application: context.application._id,\n          token\n        }, 'checking for stream queue');\n        return channel.checkQueue(`${eventToken.code}_stream`).then(() => {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'stream queue exists');\n          return eventToken;\n        }).catch(() => {\n          this._logger.info({\n            application: context.application._id,\n            token\n          }, 'stream queue non existant');\n          //we have to reinitialize the connection here\n          return this._getChannel().then((ch) => {\n            //force token to recreate\n            channel = ch;\n            return null;\n          });\n        });\n      }).then((eventToken) => {\n        //if either of these dont exist create a token and queue\n        if (!eventToken) {\n          this._logger.info('creating new token');\n          return new EventToken({\n            application: context.application._id,\n            environment: context.environment\n          }).saveAsync().then((result) => {\n            eventToken = result;\n            this._logger.info({\n              token: eventToken.code,\n              application: context.application._id\n            }, 'created new token');\n            this._logger.info({\n              token: eventToken.code,\n              application: context.application._id\n            }, 'creating queue');\n            return channel.assertQueue(`${eventToken.code}_stream`, {\n              durable: true,\n              //expire in an hour of not checking\n              expires: 3600000\n            }).then(() => {\n              let eventNamePattern = '*';\n              let correlationIdPattern = '*';\n              if (filterBy === 'eventName') {\n                eventNamePattern = filterValue;\n              }\n              if (filterBy === 'correlationId') {\n                correlationIdPattern = '*';\n              }\n              let pattern = `event.${context.application._id}.${eventNamePattern}.${correlationIdPattern}`;\n              return channel.assertExchange('hoist', 'topic').then(() => {\n                return channel.bindQueue(`${eventToken.code}_stream`, `hoist`, pattern)\n                  .then(() => {\n                    this._logger.info({\n                      token: eventToken.code,\n                      application: context.application._id\n                    }, 'queue created');\n                    return eventToken;\n                  });\n              });\n\n            });\n          });\n        } else {\n          return eventToken;\n        }\n      }).then((eventToken) => {\n        channel.connection.close();\n        return eventToken;\n      });\n    });\n  }\n\n  /**\n   * map routes for this controller\n   * @param {HapiServer} server - the Hapi Server instance\n   */\n  mapRoutes(server) {\n    this._logger.info('mapping server routes');\n    let routePrefix = '/event';\n    server.route([{\n      // GET /events\n      path: routePrefix + 's',\n      method: ['GET'],\n      handler: this.getStream,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // GET /event/payload/{id}\n      path: routePrefix + '/payload/{id}',\n      method: ['GET'],\n      handler: this.getEventPayload,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // GET /event/{id}\n      path: routePrefix + '/{id}',\n      method: ['GET'],\n      handler: this.getEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }, {\n      // POST /event/eventName\n\n      path: routePrefix + '/{eventName}',\n      method: ['POST'],\n      handler: this.createEvent,\n      config: {\n        auth: 'hoist',\n        bind: this\n      }\n    }]);\n  }\n}\n\nexport default EventController;\n"
   },
   {
     "kind": "class",
@@ -189,7 +189,7 @@
     "importPath": "api.hoi.io/lib/api_controllers/event_controller.js",
     "importStyle": "EventController",
     "description": "API Controller for /event endpoints",
-    "lineNumber": 18,
+    "lineNumber": 22,
     "interface": false
   },
   {
@@ -201,7 +201,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#constructor",
     "access": null,
     "description": "create new instance",
-    "lineNumber": 22,
+    "lineNumber": 26,
     "params": [],
     "generator": false
   },
@@ -214,7 +214,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_logger",
     "access": null,
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 27,
     "undocument": true,
     "type": {
       "types": [
@@ -231,7 +231,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_pipeline",
     "access": null,
     "description": null,
-    "lineNumber": 27,
+    "lineNumber": 31,
     "undocument": true,
     "type": {
       "types": [
@@ -248,7 +248,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_receiver",
     "access": null,
     "description": null,
-    "lineNumber": 28,
+    "lineNumber": 32,
     "undocument": true,
     "type": {
       "types": [
@@ -265,7 +265,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_getChannel",
     "access": null,
     "description": null,
-    "lineNumber": 30,
+    "lineNumber": 34,
     "undocument": true,
     "params": [],
     "return": {
@@ -284,7 +284,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#createEvent",
     "access": null,
     "description": "create a brand new event",
-    "lineNumber": 52,
+    "lineNumber": 56,
     "unknown": [
       {
         "tagName": "@returns",
@@ -332,7 +332,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#getEvent",
     "access": null,
     "description": "get an event",
-    "lineNumber": 81,
+    "lineNumber": 85,
     "unknown": [
       {
         "tagName": "@depreciated",
@@ -364,7 +364,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#getEventPayload",
     "access": null,
     "description": "get an events payload",
-    "lineNumber": 91,
+    "lineNumber": 95,
     "unknown": [
       {
         "tagName": "@returns",
@@ -412,7 +412,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#getStream",
     "access": null,
     "description": "get an event in a stream or continue an existing stream",
-    "lineNumber": 110,
+    "lineNumber": 114,
     "unknown": [
       {
         "tagName": "@returns",
@@ -460,7 +460,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_composeStreamReply",
     "access": null,
     "description": null,
-    "lineNumber": 130,
+    "lineNumber": 134,
     "undocument": true,
     "params": [
       {
@@ -516,7 +516,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#_getOrCreateStreamToken",
     "access": null,
     "description": null,
-    "lineNumber": 196,
+    "lineNumber": 197,
     "undocument": true,
     "params": [
       {
@@ -560,7 +560,7 @@
     "longname": "lib/api_controllers/event_controller.js~EventController#mapRoutes",
     "access": null,
     "description": "map routes for this controller",
-    "lineNumber": 296,
+    "lineNumber": 297,
     "params": [
       {
         "nullable": null,
@@ -587,7 +587,7 @@
     "importPath": "api.hoi.io/lib/api_controllers/event_controller.js",
     "importStyle": "eventController",
     "description": null,
-    "lineNumber": 340,
+    "lineNumber": 341,
     "undocument": true,
     "type": {
       "types": [
