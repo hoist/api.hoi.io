@@ -210,7 +210,12 @@ class EventController {
         reply(err);
       });
   }
-  _composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished) {
+  _composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished, i) {
+    i = i || 0;
+    i++;
+    logger.info({
+      i: i
+    }, &apos;looping&apos;);
     if (!channel) {
       return this._getChannel().then((ch) =&gt; {
         return this._composeStreamReply(reply, eventToken, events, timeoutTime, ch, finished);
@@ -256,7 +261,7 @@ class EventController {
           timeoutTime
         }, &apos;recursing&apos;);
         return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment()))).then(() =&gt; {
-          return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);
+          return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished, i);
         });
       });
 
