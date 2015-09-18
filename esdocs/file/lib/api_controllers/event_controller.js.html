@@ -255,7 +255,7 @@ class EventController {
           token: eventToken.code,
           timeoutTime
         }, &apos;recursing&apos;);
-        return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment))).then(() =&gt; {
+        return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment()))).then(() =&gt; {
           return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished);
         });
       });
@@ -276,7 +276,7 @@ class EventController {
   _getOrCreateStreamToken(token, context, filterBy, filterValue) {
     return this._getChannel().then((channel) =&gt; {
       //get the token if it exists
-      this._logger.info({
+      this._logger.debug({
         application: context.application._id,
         token
       }, &apos;loading token&apos;);
@@ -286,25 +286,25 @@ class EventController {
         code: token
       }).then((eventToken) =&gt; {
         if (!eventToken) {
-          this._logger.info({
+          this._logger.debug({
             application: context.application._id,
             token
           }, &apos;no token found&apos;);
           return null;
         }
         //check the queue exists
-        this._logger.info({
+        this._logger.debug({
           application: context.application._id,
           token
         }, &apos;checking for stream queue&apos;);
         return channel.checkQueue(`${eventToken.code}_stream`).then(() =&gt; {
-          this._logger.info({
+          this._logger.debug({
             application: context.application._id,
             token
           }, &apos;stream queue exists&apos;);
           return eventToken;
         }).catch(() =&gt; {
-          this._logger.info({
+          this._logger.debug({
             application: context.application._id,
             token
           }, &apos;stream queue non existant&apos;);
@@ -318,17 +318,17 @@ class EventController {
       }).then((eventToken) =&gt; {
         //if either of these dont exist create a token and queue
         if (!eventToken) {
-          this._logger.info(&apos;creating new token&apos;);
+          this._logger.debug(&apos;creating new token&apos;);
           return new EventToken({
             application: context.application._id,
             environment: context.environment
           }).saveAsync().then((result) =&gt; {
             eventToken = result;
-            this._logger.info({
+            this._logger.debug({
               token: eventToken.code,
               application: context.application._id
             }, &apos;created new token&apos;);
-            this._logger.info({
+            this._logger.debug({
               token: eventToken.code,
               application: context.application._id
             }, &apos;creating queue&apos;);
@@ -349,7 +349,7 @@ class EventController {
               return channel.assertExchange(&apos;hoist&apos;, &apos;topic&apos;).then(() =&gt; {
                 return channel.bindQueue(`${eventToken.code}_stream`, `hoist`, pattern)
                   .then(() =&gt; {
-                    this._logger.info({
+                    this._logger.debug({
                       token: eventToken.code,
                       application: context.application._id
                     }, &apos;queue created&apos;);
@@ -374,7 +374,7 @@ class EventController {
    * @param {HapiServer} server - the Hapi Server instance
    */
   mapRoutes(server) {
-    this._logger.info(&apos;mapping server routes&apos;);
+    this._logger.debug(&apos;mapping server routes&apos;);
     let routePrefix = &apos;/event&apos;;
     server.route([{
       // GET /events
