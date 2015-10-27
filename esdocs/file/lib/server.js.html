@@ -116,7 +116,10 @@ class Server {
     this._hapiServer = new Hapi.Server();
     this._hapiServer.connection({
       host: config.get(&apos;Hoist.http.host&apos;),
-      port: config.get(&apos;Hoist.http.port&apos;)
+      port: config.get(&apos;Hoist.http.port&apos;),
+      routes: {
+        cors: true
+      }
     });
     this._configurePlugins();
     this._router.map(this._hapiServer);

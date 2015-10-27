@@ -9,7 +9,7 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill api.hoi.io-%i
 ExecStartPre=-/usr/bin/docker rm api.hoi.io-%i
 ExecStartPre=-/usr/bin/docker pull hoist/api.hoi.io:master
-ExecStart=/bin/bash -c \"/usr/bin/docker run -h $${COREOS_PRIVATE_IPV4//./-} -m 150M --name api.hoi.io-%i -e \"SERVICE_TAGS=http,nodejs,api.hoi.io,production,https-hoi-io\" -e \"SERVICE_NAME=api\" -e \"NODE_ENV=production\" -e \"SERVICE_8000_CHECK_HTTP=/api/heartbeat\" -e \"SERVICE_8000_CHECK_INTERVAL=15s\" --volumes-from config -P hoist/api.hoi.io:master"
+ExecStart=/bin/bash -c "/usr/bin/docker run -h $${COREOS_PRIVATE_IPV4//./-} -m 150M --name api.hoi.io-%i -e \"SERVICE_TAGS=http,nodejs,api.hoi.io,production,https-hoi-io\" -e \"SERVICE_NAME=api\" -e \"NODE_ENV=production\" -e \"SERVICE_8000_CHECK_HTTP=/api/heartbeat\" -e \"SERVICE_8000_CHECK_INTERVAL=15s\" --volumes-from config -P hoist/api.hoi.io:master"
 ExecStop=/usr/bin/docker stop api.hoi.io-%i
 TimeoutStartSec=30m
 

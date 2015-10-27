@@ -260,7 +260,11 @@ class EventController {
           token: eventToken.code,
           timeoutTime
         }, &apos;recursing&apos;);
-        return Bluebird.delay(Math.min(2000, timeoutTime.diff(moment()))).then(() =&gt; {
+        let delay = timeoutTime.diff(moment());
+        if (delay &gt; 15000) {
+          delay = 15000;
+        }
+        return Bluebird.delay(delay).then(() =&gt; {
           return this._composeStreamReply(reply, eventToken, events, timeoutTime, channel, finished, i);
         });
       });
