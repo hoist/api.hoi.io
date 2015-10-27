@@ -36,7 +36,7 @@ gulp.task('api-docs-raw', ['concat-api-docs'], function () {
 gulp.task('api-docs-multi', ['concat-api-docs'], function () {
   return gulp.src('apiary.apib')
     .pipe(plugins.aglio({
-      template: 'flatly-multi'
+      template: 'flatly'
     }))
     .pipe(plugins.concat('index.html'))
     .pipe(gulp.dest('./docs'));

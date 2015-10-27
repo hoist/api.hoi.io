@@ -4739,26 +4739,9 @@
           "column": 1
         }
       },
-      "leadingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * an authentication scheme for Hoist requests\n ",
-          "range": [
-            161,
-            215
-          ],
-          "loc": {
-            "start": {
-              "line": 11,
-              "column": 0
-            },
-            "end": {
-              "line": 13,
-              "column": 3
-            }
-          }
-        }
-      ]
+      "leadingComments": [],
+      "name": "_",
+      "trailingComments": []
     },
     {
       "type": "VariableDeclaration",
@@ -4885,26 +4868,9 @@
           "column": 35
         }
       },
-      "trailingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * register the hoist authentication scheme\n ",
-          "range": [
-            2035,
-            2086
-          ],
-          "loc": {
-            "start": {
-              "line": 84,
-              "column": 0
-            },
-            "end": {
-              "line": 86,
-              "column": 3
-            }
-          }
-        }
-      ]
+      "trailingComments": [],
+      "name": "_",
+      "leadingComments": []
     },
     {
       "type": "ExportNamedDeclaration",
@@ -10306,94 +10272,6 @@
         }
       ],
       "leadingComments": null
-    },
-    {
-      "type": "ExportDefaultDeclaration",
-      "declaration": {
-        "type": "VariableDeclaration",
-        "kind": "let",
-        "loc": {
-          "start": {
-            "line": 82,
-            "column": 0
-          },
-          "end": {
-            "line": 82,
-            "column": 35
-          }
-        },
-        "declarations": [
-          {
-            "type": "VariableDeclarator",
-            "id": {
-              "type": "Identifier",
-              "name": "hoistAuthentication"
-            },
-            "init": {
-              "type": "NewExpression",
-              "callee": {
-                "type": "Identifier",
-                "name": "HoistAuthentication"
-              }
-            }
-          }
-        ],
-        "leadingComments": [],
-        "trailingComments": [
-          {
-            "type": "Block",
-            "value": "*\n * register the hoist authentication scheme\n ",
-            "range": [
-              2035,
-              2086
-            ],
-            "loc": {
-              "start": {
-                "line": 84,
-                "column": 0
-              },
-              "end": {
-                "line": 86,
-                "column": 3
-              }
-            }
-          }
-        ]
-      },
-      "range": [
-        1998,
-        2033
-      ],
-      "loc": {
-        "start": {
-          "line": 82,
-          "column": 0
-        },
-        "end": {
-          "line": 82,
-          "column": 35
-        }
-      },
-      "trailingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * register the hoist authentication scheme\n ",
-          "range": [
-            2035,
-            2086
-          ],
-          "loc": {
-            "start": {
-              "line": 84,
-              "column": 0
-            },
-            "end": {
-              "line": 86,
-              "column": 3
-            }
-          }
-        }
-      ]
     }
   ],
   "sourceType": "module",

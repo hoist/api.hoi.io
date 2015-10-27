@@ -3961,26 +3961,9 @@
           "column": 1
         }
       },
-      "leadingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * API Controller for /event endpoints\n ",
-          "range": [
-            156,
-            202
-          ],
-          "loc": {
-            "start": {
-              "line": 10,
-              "column": 0
-            },
-            "end": {
-              "line": 12,
-              "column": 3
-            }
-          }
-        }
-      ]
+      "leadingComments": [],
+      "name": "_",
+      "trailingComments": []
     },
     {
       "type": "Identifier",
@@ -4015,7 +3998,10 @@
           "line": 69,
           "column": 31
         }
-      }
+      },
+      "name": "_",
+      "leadingComments": [],
+      "trailingComments": []
     },
     {
       "type": "ExportDefaultDeclaration",
@@ -7651,55 +7637,6 @@
         }
       },
       "leadingComments": null
-    },
-    {
-      "type": "ExportDefaultDeclaration",
-      "declaration": {
-        "type": "VariableDeclaration",
-        "kind": "let",
-        "loc": {
-          "start": {
-            "line": 69,
-            "column": 0
-          },
-          "end": {
-            "line": 69,
-            "column": 31
-          }
-        },
-        "declarations": [
-          {
-            "type": "VariableDeclarator",
-            "id": {
-              "type": "Identifier",
-              "name": "eventController"
-            },
-            "init": {
-              "type": "NewExpression",
-              "callee": {
-                "type": "Identifier",
-                "name": "EventController"
-              }
-            }
-          }
-        ],
-        "leadingComments": [],
-        "trailingComments": []
-      },
-      "range": [
-        1531,
-        1562
-      ],
-      "loc": {
-        "start": {
-          "line": 69,
-          "column": 0
-        },
-        "end": {
-          "line": 69,
-          "column": 31
-        }
-      }
     }
   ],
   "sourceType": "module",

@@ -1,5 +1,5 @@
 'use strict';
-require("babel/register");
+require("babel-register");
 var logger = require('@hoist/logger');
 var Server = require('./lib/server');
 process.title = 'api.hoi.io';

@@ -35,8 +35,8 @@ describe('GET /events', function () {
         apiKey: 'apiKey',
         slug: 'app'
       }).saveAsync()
-      .then((results) => {
-        application = results[0];
+      .then((a) => {
+        application = a;
       })
     ]);
   });
