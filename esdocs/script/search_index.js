@@ -475,43 +475,19 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber128",
-    "GET /events on call with a token",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber213",
-    "GET /events on call with a token polls for any messages in the queue",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber219",
-    "GET /events on call with a token removes messages from the queue",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber216",
-    "GET /events on call with a token returns the token",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber229",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber230",
     "GET /events on call with expired token",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber281",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber282",
     "GET /events on call with expired token returns a token",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber272",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber273",
     "GET /events on call with expired token sets up a new queue",
     "test"
   ],
@@ -555,6 +531,24 @@ window.esdocSearchIndex = [
     "",
     "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber124",
     "GET /events on initial call sets expiry on the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber214",
+    "GET /events polls for any messages in the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber220",
+    "GET /events removes messages from the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber217",
+    "GET /events returns the token",
     "test"
   ],
   [

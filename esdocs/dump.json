@@ -2279,7 +2279,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "'use strict';\nimport Server from '../../../../lib/server';\nimport {\n  _mongoose,\n  Application,\n  Organisation,\n  EventToken\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport request from 'request-promise';\nimport {\n  expect\n}\nfrom 'chai';\n\nlet baseRabbitManagementUri = `${config.get('Hoist.rabbit.managementurl')}api/`;\ndescribe('GET /events', function () {\n  let server;\n  let application;\n  before(() => {\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((a) => {\n        application = a;\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('on initial call', function () {\n    this.timeout(5000);\n    let _response;\n    let queueDetails;\n    let exchangeUri = `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/hoist`;\n    let queueUri;\n    before((done) => {\n      //clock = sinon.useFakeTimers();\n      server._hapiServer.inject({\n        method: 'GET',\n        url: '/events?timeoutMS=10',\n        headers: {\n          authorization: 'Hoist apiKey',\n          'content-type': 'application/json'\n        }\n      }, (response) => {\n        _response = response;\n        queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(_response.result.token)}_stream`;\n        request({\n          method: 'GET',\n          uri: queueUri,\n          json: true\n        }).then((queueResponse) => {\n          queueDetails = queueResponse;\n          done();\n        }).catch((err) => {\n          done(err);\n        });\n      });\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: exchangeUri,\n          json: true\n        }),\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('returns new token code', () => {\n      return expect(_response.result.token).to.exist;\n    });\n    it('responds with 200|OK', () => {\n      return expect(_response.statusCode).to.eql(200);\n    });\n    it('links the token to a rabbit queue', () => {\n      return expect(queueDetails).to.exist;\n    });\n    it('saves a token to the db', () => {\n      return EventToken.findOneAsync({\n        code: _response.result.token\n      }).then((eventToken) => {\n        return expect(eventToken.application).to.eql(application._id) &&\n          expect(eventToken.environment).to.eql('live');\n      });\n    });\n    it('links the queue to the correct event exchange', () => {\n      return request({\n        method: 'GET',\n        uri: `${exchangeUri}/bindings/source`,\n        json: true\n      }).then((boundQueues) => {\n        return expect(boundQueues.length).to.eql(1) &&\n          expect(boundQueues[0].destination).to.eql(`${_response.result.token}_stream`) &&\n          expect(boundQueues[0].routing_key).to.eql(`event.${application._id}.*.*`);\n      });\n    });\n    it('sets expiry on the queue', () => {\n      return expect(queueDetails.arguments['x-expires']).to.eql(3600000);\n    });\n  });\n  describe('on call with a token', function () {\n    this.timeout(10000);\n    let eventToken;\n    let queueUri;\n    let event1 = {\n      name: 'event1'\n    };\n    let event2 = {\n      name: 'event2'\n    };\n    let _response;\n    before((done) => {\n      eventToken = new EventToken({\n        application: application._id,\n        environment: 'live'\n      });\n\n      return eventToken.saveAsync()\n        .then(() => {\n          queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(eventToken.code)}_stream`;\n          console.log(queueUri);\n          return request({\n            method: 'PUT',\n            uri: queueUri,\n            json: true,\n            body: {\n              \"auto_delete\": false,\n              \"durable\": true,\n              \"arguments\": {\n                'x-expires': 10000\n              }\n            }\n          }).catch((err) => {\n            console.log(err);\n          });\n        }).then(() => {\n          return Promise.all([\n            request({\n              method: 'POST',\n              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/amq.default/publish`,\n              json: true,\n              body: {\n                \"properties\": {},\n                \"routing_key\": `${eventToken.code}_stream`,\n                \"payload\": JSON.stringify(event1),\n                \"payload_encoding\": \"string\"\n              }\n            }),\n            request({\n              method: 'POST',\n              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/amq.default/publish`,\n              json: true,\n              body: {\n                \"properties\": {},\n                \"routing_key\": `${eventToken.code}_stream`,\n                \"payload\": JSON.stringify(event2),\n                \"payload_encoding\": \"string\"\n              }\n            })\n          ]);\n        }).then(() => {\n          server._hapiServer.inject({\n            method: 'GET',\n            url: `/events?token=${encodeURIComponent(eventToken.code)}`,\n            headers: {\n              authorization: 'Hoist apiKey',\n              'content-type': 'application/json'\n            }\n          }, (response) => {\n            _response = response;\n            done();\n          });\n        });\n\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('polls for any messages in the queue', () => {\n      return expect(_response.result.events.length).to.eql(2);\n    });\n    it('returns the token', () => {\n      return expect(_response.result.token).to.eql(eventToken.code);\n    });\n    it('removes messages from the queue', () => {\n      return request({\n        method: 'GET',\n        uri: queueUri,\n        json: true\n      }).then((result) => {\n        return expect(result.messages).to.eql(0);\n      });\n    });\n  });\n  describe('on call with expired token', () => {\n    this.timeout(10000);\n    let eventToken;\n    let queueUri;\n    let _response;\n    before((done) => {\n\n      eventToken = new EventToken({\n        application: application._id,\n        environment: 'live'\n      });\n\n      return eventToken.saveAsync()\n        .then(() => {\n          server._hapiServer.inject({\n            method: 'GET',\n            url: `/events?token=${encodeURIComponent(eventToken.code)}&timeoutMS=50`,\n            headers: {\n              authorization: 'Hoist apiKey',\n              'content-type': 'application/json'\n            }\n          }, (response) => {\n            _response = response;\n            queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(_response.result.token)}_stream`;\n            done();\n          });\n        });\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        request({\n          method: 'DELETE',\n          uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/hoist`,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('sets up a new queue', () => {\n      return request({\n        method: 'GET',\n        uri: queueUri,\n        json: true\n      }).then((response) => {\n        return expect(response.name).to.exist;\n      });\n    });\n    it('returns a token', () => {\n      return expect(_response.result.token).to.exist && expect(_response.result.token).to.not.eql(eventToken.code);\n    });\n  });\n});\n"
+    "content": "'use strict';\nimport Server from '../../../../lib/server';\nimport {\n  _mongoose,\n  Application,\n  Organisation,\n  EventToken\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport request from 'request-promise';\nimport {\n  expect\n}\nfrom 'chai';\n\nlet baseRabbitManagementUri = `${config.get('Hoist.rabbit.managementurl')}api/`;\ndescribe('GET /events', function () {\n  let server;\n  let application;\n  before(() => {\n    server = new Server();\n    server._createServer();\n    return Promise.all([\n      _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString')),\n      new Organisation({\n        _id: 'orgid',\n        name: 'test org',\n        slug: 'org'\n      }).saveAsync(),\n      new Application({\n        _id: 'appid2',\n        organisation: 'orgid',\n        name: 'test app',\n        apiKey: 'apiKey',\n        slug: 'app'\n      }).saveAsync()\n      .then((a) => {\n        application = a;\n      })\n    ]);\n  });\n  after(function () {\n    return Promise.all([\n      Organisation.removeAsync(),\n      Application.removeAsync()\n    ]).then(function () {\n      return _mongoose.disconnectAsync();\n    });\n  });\n  describe('on initial call', function () {\n    this.timeout(5000);\n    let _response;\n    let queueDetails;\n    let exchangeUri = `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/hoist`;\n    let queueUri;\n    before((done) => {\n      //clock = sinon.useFakeTimers();\n      server._hapiServer.inject({\n        method: 'GET',\n        url: '/events?timeoutMS=10',\n        headers: {\n          authorization: 'Hoist apiKey',\n          'content-type': 'application/json'\n        }\n      }, (response) => {\n        _response = response;\n        queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(_response.result.token)}_stream`;\n        request({\n          method: 'GET',\n          uri: queueUri,\n          json: true\n        }).then((queueResponse) => {\n          queueDetails = queueResponse;\n          done();\n        }).catch((err) => {\n          done(err);\n        });\n      });\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: exchangeUri,\n          json: true\n        }),\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('returns new token code', () => {\n      return expect(_response.result.token).to.exist;\n    });\n    it('responds with 200|OK', () => {\n      return expect(_response.statusCode).to.eql(200);\n    });\n    it('links the token to a rabbit queue', () => {\n      return expect(queueDetails).to.exist;\n    });\n    it('saves a token to the db', () => {\n      return EventToken.findOneAsync({\n        code: _response.result.token\n      }).then((eventToken) => {\n        return expect(eventToken.application).to.eql(application._id) &&\n          expect(eventToken.environment).to.eql('live');\n      });\n    });\n    it('links the queue to the correct event exchange', () => {\n      return request({\n        method: 'GET',\n        uri: `${exchangeUri}/bindings/source`,\n        json: true\n      }).then((boundQueues) => {\n        return expect(boundQueues.length).to.eql(1) &&\n          expect(boundQueues[0].destination).to.eql(`${_response.result.token}_stream`) &&\n          expect(boundQueues[0].routing_key).to.eql(`event.${application._id}.*.*`);\n      });\n    });\n    it('sets expiry on the queue', () => {\n      return expect(queueDetails.arguments['x-expires']).to.eql(3600000);\n    });\n  });\n  describe.skip('on call with a token', function () {\n    this.timeout(20000);\n    let eventToken;\n    let queueUri;\n    let event1 = {\n      name: 'event1'\n    };\n    let event2 = {\n      name: 'event2'\n    };\n    let _response;\n    before((done) => {\n      eventToken = new EventToken({\n        application: application._id,\n        environment: 'live'\n      });\n\n      return eventToken.saveAsync()\n        .then(() => {\n          queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(eventToken.code)}_stream`;\n          console.log(queueUri);\n          return request({\n            method: 'PUT',\n            uri: queueUri,\n            json: true,\n            body: {\n              \"auto_delete\": false,\n              \"durable\": true,\n              \"arguments\": {\n                'x-expires': 10000\n              }\n            }\n          }).catch((err) => {\n            throw err;\n          });\n        }).then(() => {\n          console.log('here');\n          return Promise.all([\n            request({\n              method: 'POST',\n              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/amq.default/publish`,\n              json: true,\n              body: {\n                \"properties\": {},\n                \"routing_key\": `${eventToken.code}_stream`,\n                \"payload\": JSON.stringify(event1),\n                \"payload_encoding\": \"string\"\n              }\n            }),\n            request({\n              method: 'POST',\n              uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/amq.default/publish`,\n              json: true,\n              body: {\n                \"properties\": {},\n                \"routing_key\": `${eventToken.code}_stream`,\n                \"payload\": JSON.stringify(event2),\n                \"payload_encoding\": \"string\"\n              }\n            })\n          ]);\n        }).then(() => {\n          server._hapiServer.inject({\n            method: 'GET',\n            url: `/events?token=${encodeURIComponent(eventToken.code)}`,\n            headers: {\n              authorization: 'Hoist apiKey',\n              'content-type': 'application/json'\n            }\n          }, (response) => {\n            _response = response;\n            done();\n          });\n        });\n\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('polls for any messages in the queue', () => {\n      return expect(_response.result.events.length).to.eql(2);\n    });\n    it('returns the token', () => {\n      return expect(_response.result.token).to.eql(eventToken.code);\n    });\n    it('removes messages from the queue', () => {\n      return request({\n        method: 'GET',\n        uri: queueUri,\n        json: true\n      }).then((result) => {\n        return expect(result.messages).to.eql(0);\n      });\n    });\n  });\n  describe('on call with expired token', () => {\n    this.timeout(10000);\n    let eventToken;\n    let queueUri;\n    let _response;\n    before((done) => {\n\n      eventToken = new EventToken({\n        application: application._id,\n        environment: 'live'\n      });\n\n      return eventToken.saveAsync()\n        .then(() => {\n          server._hapiServer.inject({\n            method: 'GET',\n            url: `/events?token=${encodeURIComponent(eventToken.code)}&timeoutMS=50`,\n            headers: {\n              authorization: 'Hoist apiKey',\n              'content-type': 'application/json'\n            }\n          }, (response) => {\n            _response = response;\n            queueUri = `${baseRabbitManagementUri}queues/${encodeURIComponent('/')}/${encodeURIComponent(_response.result.token)}_stream`;\n            done();\n          });\n        });\n    });\n    after(() => {\n      return Promise.all([\n        request({\n          method: 'DELETE',\n          uri: queueUri,\n          json: true\n        }),\n        request({\n          method: 'DELETE',\n          uri: `${baseRabbitManagementUri}exchanges/${encodeURIComponent('/')}/hoist`,\n          json: true\n        }),\n        EventToken.removeAsync({})\n      ]);\n    });\n    it('sets up a new queue', () => {\n      return request({\n        method: 'GET',\n        uri: queueUri,\n        json: true\n      }).then((response) => {\n        return expect(response.name).to.exist;\n      });\n    });\n    it('returns a token', () => {\n      return expect(_response.result.token).to.exist && expect(_response.result.token).to.not.eql(eventToken.code);\n    });\n  });\n});\n"
   },
   {
     "__docId__": 137,
@@ -2395,17 +2395,17 @@
   },
   {
     "__docId__": 145,
-    "kind": "testDescribe",
+    "kind": "testIt",
     "static": true,
     "variation": null,
-    "name": "describe31",
+    "name": "it31",
     "testId": 31,
     "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23",
     "testDepth": 1,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31",
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.it31",
     "access": null,
-    "description": "on call with a token",
-    "lineNumber": 128
+    "description": "polls for any messages in the queue",
+    "lineNumber": 214
   },
   {
     "__docId__": 146,
@@ -2414,12 +2414,12 @@
     "variation": null,
     "name": "it32",
     "testId": 32,
-    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31",
-    "testDepth": 2,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31.it32",
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.it32",
     "access": null,
-    "description": "polls for any messages in the queue",
-    "lineNumber": 213
+    "description": "returns the token",
+    "lineNumber": 217
   },
   {
     "__docId__": 147,
@@ -2428,40 +2428,40 @@
     "variation": null,
     "name": "it33",
     "testId": 33,
-    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31",
-    "testDepth": 2,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31.it33",
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23",
+    "testDepth": 1,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.it33",
     "access": null,
-    "description": "returns the token",
-    "lineNumber": 216
+    "description": "removes messages from the queue",
+    "lineNumber": 220
   },
   {
     "__docId__": 148,
-    "kind": "testIt",
-    "static": true,
-    "variation": null,
-    "name": "it34",
-    "testId": 34,
-    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31",
-    "testDepth": 2,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe31.it34",
-    "access": null,
-    "description": "removes messages from the queue",
-    "lineNumber": 219
-  },
-  {
-    "__docId__": 149,
     "kind": "testDescribe",
     "static": true,
     "variation": null,
-    "name": "describe35",
-    "testId": 35,
+    "name": "describe34",
+    "testId": 34,
     "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23",
     "testDepth": 1,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe35",
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe34",
     "access": null,
     "description": "on call with expired token",
-    "lineNumber": 229
+    "lineNumber": 230
+  },
+  {
+    "__docId__": 149,
+    "kind": "testIt",
+    "static": true,
+    "variation": null,
+    "name": "it35",
+    "testId": 35,
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe34",
+    "testDepth": 2,
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe34.it35",
+    "access": null,
+    "description": "sets up a new queue",
+    "lineNumber": 273
   },
   {
     "__docId__": 150,
@@ -2470,29 +2470,15 @@
     "variation": null,
     "name": "it36",
     "testId": 36,
-    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe35",
+    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe34",
     "testDepth": 2,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe35.it36",
+    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe34.it36",
     "access": null,
-    "description": "sets up a new queue",
-    "lineNumber": 272
+    "description": "returns a token",
+    "lineNumber": 282
   },
   {
     "__docId__": 151,
-    "kind": "testIt",
-    "static": true,
-    "variation": null,
-    "name": "it37",
-    "testId": 37,
-    "memberof": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe35",
-    "testDepth": 2,
-    "longname": "tests/unit_tests/api_controller_tests/event_api/stream_tests.js~describe23.describe35.it37",
-    "access": null,
-    "description": "returns a token",
-    "lineNumber": 281
-  },
-  {
-    "__docId__": 152,
     "kind": "testFile",
     "static": true,
     "variation": null,
