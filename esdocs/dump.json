@@ -1006,7 +1006,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "'use strict';\nimport Bluebird from 'bluebird';\nimport {\n  _mongoose\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport Router from './router';\nimport logger from '@hoist/logger';\nimport Hapi from 'hapi';\nBluebird.promisifyAll(_mongoose);\n\n/**\n * a wrapper around the HapiServer\n */\n\nclass Server {\n\n  /**\n   * create a new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._router = new Router();\n  }\n\n  _configurePlugins() {\n    this._hapiServer.register([\n      require('./authentication/hoist_plugin')\n    ], function () {\n\n    });\n  }\n  _createServer() {\n    this._hapiServer = new Hapi.Server();\n    this._hapiServer.connection({\n      host: config.get('Hoist.http.host'),\n      port: config.get('Hoist.http.port'),\n      routes: {\n        cors: true\n      }\n    });\n    this._configurePlugins();\n    this._router.map(this._hapiServer);\n    Bluebird.promisifyAll(this._hapiServer);\n\n  }\n\n  /**\n   * start the server and configure it\n   */\n  start() {\n    this._createServer();\n    return this._hapiServer.startAsync()\n      .then(function () {\n        return _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString'));\n      });\n  }\n\n  /**\n   * stop the server\n   */\n  stop() {\n\n    return this._hapiServer.stopAsync()\n      .then(() => {\n        return _mongoose.disconnectAsync();\n      });\n  }\n}\n\nexport default Server;\n\n/**\n * @external {HapiServer} http://hapijs.com/api#server\n */\n\n/**\n * @external {Request} http://hapijs.com/api#request-object\n */\n\n/**\n * @external {Reply} http://hapijs.com/api#reply-interface\n */\n"
+    "content": "'use strict';\nimport Bluebird from 'bluebird';\nimport {\n  _mongoose\n}\nfrom '@hoist/model';\nimport config from 'config';\nimport Router from './router';\nimport logger from '@hoist/logger';\nimport Hapi from 'hapi';\nBluebird.promisifyAll(_mongoose);\n\n/**\n * a wrapper around the HapiServer\n */\n\nclass Server {\n\n  /**\n   * create a new instance\n   */\n  constructor() {\n    this._logger = logger.child({\n      cls: this.constructor.name\n    });\n    this._router = new Router();\n  }\n\n  _configurePlugins() {\n    this._hapiServer.register([\n      require('./authentication/hoist_plugin'),\n      require('vision'),\n      require('inert')\n    ], function () {\n\n    });\n  }\n  _createServer() {\n    this._hapiServer = new Hapi.Server();\n    this._hapiServer.connection({\n      host: config.get('Hoist.http.host'),\n      port: config.get('Hoist.http.port'),\n      routes: {\n        cors: true\n      }\n    });\n    this._configurePlugins();\n    this._router.map(this._hapiServer);\n    Bluebird.promisifyAll(this._hapiServer);\n\n  }\n\n  /**\n   * start the server and configure it\n   */\n  start() {\n    this._createServer();\n    return this._hapiServer.startAsync()\n      .then(function () {\n        return _mongoose.connectAsync(config.get('Hoist.mongo.core.connectionString'));\n      });\n  }\n\n  /**\n   * stop the server\n   */\n  stop() {\n\n    return this._hapiServer.stopAsync()\n      .then(() => {\n        return _mongoose.disconnectAsync();\n      });\n  }\n}\n\nexport default Server;\n\n/**\n * @external {HapiServer} http://hapijs.com/api#server\n */\n\n/**\n * @external {Request} http://hapijs.com/api#request-object\n */\n\n/**\n * @external {Reply} http://hapijs.com/api#reply-interface\n */\n"
   },
   {
     "__docId__": 42,
@@ -1135,7 +1135,7 @@
     "longname": "lib/server.js~Server#_createServer",
     "access": null,
     "description": null,
-    "lineNumber": 36,
+    "lineNumber": 38,
     "undocument": true,
     "params": [],
     "generator": false
@@ -1150,7 +1150,7 @@
     "longname": "lib/server.js~Server#_hapiServer",
     "access": null,
     "description": null,
-    "lineNumber": 37,
+    "lineNumber": 39,
     "undocument": true,
     "type": {
       "types": [
@@ -1168,7 +1168,7 @@
     "longname": "lib/server.js~Server#start",
     "access": null,
     "description": "start the server and configure it",
-    "lineNumber": 54,
+    "lineNumber": 56,
     "params": [],
     "return": {
       "types": [
@@ -1187,7 +1187,7 @@
     "longname": "lib/server.js~Server#stop",
     "access": null,
     "description": "stop the server",
-    "lineNumber": 65,
+    "lineNumber": 67,
     "params": [],
     "return": {
       "types": [
