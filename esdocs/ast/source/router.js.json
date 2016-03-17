@@ -1698,26 +1698,9 @@
           "column": 1
         }
       },
-      "leadingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * map routes for this server\n ",
-          "range": [
-            229,
-            266
-          ],
-          "loc": {
-            "start": {
-              "line": 7,
-              "column": 0
-            },
-            "end": {
-              "line": 9,
-              "column": 3
-            }
-          }
-        }
-      ]
+      "leadingComments": [],
+      "name": "_",
+      "trailingComments": []
     },
     {
       "type": "Identifier",
@@ -1752,7 +1735,10 @@
           "line": 33,
           "column": 22
         }
-      }
+      },
+      "name": "_",
+      "leadingComments": [],
+      "trailingComments": []
     },
     {
       "type": "ExportDefaultDeclaration",
@@ -3216,55 +3202,6 @@
         }
       },
       "leadingComments": null
-    },
-    {
-      "type": "ExportDefaultDeclaration",
-      "declaration": {
-        "type": "VariableDeclaration",
-        "kind": "let",
-        "loc": {
-          "start": {
-            "line": 33,
-            "column": 0
-          },
-          "end": {
-            "line": 33,
-            "column": 22
-          }
-        },
-        "declarations": [
-          {
-            "type": "VariableDeclarator",
-            "id": {
-              "type": "Identifier",
-              "name": "router"
-            },
-            "init": {
-              "type": "NewExpression",
-              "callee": {
-                "type": "Identifier",
-                "name": "Router"
-              }
-            }
-          }
-        ],
-        "leadingComments": [],
-        "trailingComments": []
-      },
-      "range": [
-        850,
-        872
-      ],
-      "loc": {
-        "start": {
-          "line": 33,
-          "column": 0
-        },
-        "end": {
-          "line": 33,
-          "column": 22
-        }
-      }
     }
   ],
   "sourceType": "module",

@@ -1,31 +1,39 @@
 {
-  "coverage": "78.12%",
-  "expectCount": 32,
+  "coverage": "96.15%",
+  "expectCount": 26,
   "actualCount": 25,
   "files": {
     "lib/api_controllers/bucket_controller.js": {
-      "expectCount": 5,
-      "actualCount": 4
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
     },
     "lib/api_controllers/event_controller.js": {
-      "expectCount": 8,
-      "actualCount": 7
+      "expectCount": 7,
+      "actualCount": 7,
+      "undocumentLines": []
     },
     "lib/api_controllers/health_check_controller.js": {
-      "expectCount": 5,
-      "actualCount": 3
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        23
+      ]
     },
     "lib/authentication/hoist_plugin.js": {
-      "expectCount": 6,
-      "actualCount": 5
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
     },
     "lib/router.js": {
-      "expectCount": 3,
-      "actualCount": 2
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
     },
     "lib/server.js": {
-      "expectCount": 5,
-      "actualCount": 4
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
     }
   }
 }

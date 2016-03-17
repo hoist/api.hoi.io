@@ -36,46 +36,10 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "api.hoi.io/lib/api_controllers/bucket_controller.js~bucketcontroller",
-    "variable/index.html#static-variable-bucketController",
-    "<span>bucketController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/bucket_controller.js</span>",
-    "variable"
-  ],
-  [
-    "api.hoi.io/lib/api_controllers/event_controller.js~eventcontroller",
-    "variable/index.html#static-variable-eventController",
-    "<span>eventController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/event_controller.js</span>",
-    "variable"
-  ],
-  [
-    "api.hoi.io/lib/api_controllers/health_check_controller.js~eventcontroller",
-    "variable/index.html#static-variable-eventController",
-    "<span>eventController</span> <span class=\"search-result-import-path\">api.hoi.io/lib/api_controllers/health_check_controller.js</span>",
-    "variable"
-  ],
-  [
-    "api.hoi.io/lib/authentication/hoist_plugin.js~hoistauthentication",
-    "variable/index.html#static-variable-hoistAuthentication",
-    "<span>hoistAuthentication</span> <span class=\"search-result-import-path\">api.hoi.io/lib/authentication/hoist_plugin.js</span>",
-    "variable"
-  ],
-  [
     "api.hoi.io/lib/authentication/hoist_plugin.js~register",
     "function/index.html#static-function-register",
     "<span>register</span> <span class=\"search-result-import-path\">api.hoi.io/lib/authentication/hoist_plugin.js</span>",
     "function"
-  ],
-  [
-    "api.hoi.io/lib/router.js~router",
-    "variable/index.html#static-variable-router",
-    "<span>router</span> <span class=\"search-result-import-path\">api.hoi.io/lib/router.js</span>",
-    "variable"
-  ],
-  [
-    "api.hoi.io/lib/server.js~server",
-    "variable/index.html#static-variable-server",
-    "<span>server</span> <span class=\"search-result-import-path\">api.hoi.io/lib/server.js</span>",
-    "variable"
   ],
   [
     "bucketcontroller lib/api_controllers/bucket_controller.js~bucketcontroller,bucketcontroller",
@@ -85,91 +49,91 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber77",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber78",
     "Bucket Routes GET /bucket/{key}",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber159",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber160",
     "Bucket Routes GET /bucket/{key} with hoist err while getting bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber177",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber178",
     "Bucket Routes GET /bucket/{key} with hoist err while getting bucket responds with 500",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber78",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber79",
     "Bucket Routes GET /bucket/{key} with matching bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber111",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber112",
     "Bucket Routes GET /bucket/{key} with matching bucket returns 200",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber101",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber102",
     "Bucket Routes GET /bucket/{key} with matching bucket returns the bucket JSON",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber104",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber105",
     "Bucket Routes GET /bucket/{key} with matching bucket sends correct context to pipeline",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber137",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber138",
     "Bucket Routes GET /bucket/{key} with no bucket key supplied",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber155",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber156",
     "Bucket Routes GET /bucket/{key} with no bucket key supplied responds with 404 NOT FOUND",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber115",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber116",
     "Bucket Routes GET /bucket/{key} with no matching bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber133",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber134",
     "Bucket Routes GET /bucket/{key} with no matching bucket responds with 404 NOT FOUND",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber181",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber182",
     "Bucket Routes GET /bucket/{key} with non hoist err while getting bucket",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber199",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber200",
     "Bucket Routes GET /bucket/{key} with non hoist err while getting bucket responds with 500",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber56",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber57",
     "Bucket Routes Sets up correct routes",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber65",
+    "test-file/tests/unit_tests/api_controller_tests/bucket_controller_tests.js.html#lineNumber66",
     "Bucket Routes Sets up correct routes creates GET /bucket/{key}",
     "test"
   ],
@@ -456,6 +420,12 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
+    "builtinexternal/webapiexternal.js~audiocontext",
+    "external/index.html",
+    "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "external"
+  ],
+  [
     "builtinexternal/webapiexternal.js~canvasrenderingcontext2d",
     "external/index.html",
     "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
@@ -505,43 +475,19 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber128",
-    "GET /events on call with a token",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber213",
-    "GET /events on call with a token polls for any messages in the queue",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber219",
-    "GET /events on call with a token removes messages from the queue",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber216",
-    "GET /events on call with a token returns the token",
-    "test"
-  ],
-  [
-    "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber229",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber230",
     "GET /events on call with expired token",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber281",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber282",
     "GET /events on call with expired token returns a token",
     "test"
   ],
   [
     "",
-    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber272",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber273",
     "GET /events on call with expired token sets up a new queue",
     "test"
   ],
@@ -585,6 +531,24 @@ window.esdocSearchIndex = [
     "",
     "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber124",
     "GET /events on initial call sets expiry on the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber214",
+    "GET /events polls for any messages in the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber220",
+    "GET /events removes messages from the queue",
+    "test"
+  ],
+  [
+    "",
+    "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html#lineNumber217",
+    "GET /events returns the token",
     "test"
   ],
   [
@@ -813,12 +777,6 @@ window.esdocSearchIndex = [
     "tests/unit_tests/api_controller_tests/event_api/stream_tests.js",
     "test-file/tests/unit_tests/api_controller_tests/event_api/stream_tests.js.html",
     "tests/unit_tests/api_controller_tests/event_api/stream_tests.js",
-    "testFile"
-  ],
-  [
-    "tests/unit_tests/api_controller_tests/event_controller_tests.js",
-    "test-file/tests/unit_tests/api_controller_tests/event_controller_tests.js.html",
-    "tests/unit_tests/api_controller_tests/event_controller_tests.js",
     "testFile"
   ],
   [

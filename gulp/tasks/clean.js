@@ -2,10 +2,9 @@
 var gulp = require('gulp');
 var del = require('del');
 
-gulp.task('clean-coverage', function (callback) {
-
-  del('coverage/**/*', callback);
+gulp.task('clean-coverage', function () {
+  return del('coverage/**/*');
 });
-gulp.task('clean-docs', function (callback) {
-  del('esdocs/**/*', callback);
+gulp.task('clean-docs', function () {
+  return del('esdocs/**/*');
 });

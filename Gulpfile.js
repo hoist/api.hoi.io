@@ -17,8 +17,8 @@ gulp.task('default', function () {
     'mocha-server');
 });
 
-gulp.task('post-commit', ['test', 'esdoc', 'api-docs']);
+gulp.task('post-commit', ['test', 'esdoc', ]);
 
-gulp.task('pre-commit', function () {
+gulp.task('pre-commit', ['api-docs'], function () {
 
 });
